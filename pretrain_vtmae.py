@@ -1,6 +1,11 @@
 # =========================
 # extra/pretrain_vtmae.py
 # (NO segmentation anywhere)
+# ViT-only (NO CNN anywhere)
+# Preview saves ONLY 6 images per vis step:
+#   - orig modality1 + modality2
+#   - masked modality1 + modality2 (overlay)
+#   - reconstructed modality1 + modality2 (COMPOSITE recon)
 # =========================
 from __future__ import annotations
 import os
@@ -91,80 +96,138 @@ def collect_batch(env, batch_size: int, device: torch.device) -> Tuple[torch.Ten
     return img, aux
 
 
-# ---------- reconstruction (no masking) ----------
+# --------------------------- patch helpers ---------------------------
+
+def patchify(x: torch.Tensor, ph: int, pw: int) -> torch.Tensor:
+    """
+    x: [B,C,H,W] -> [B, N, ph*pw*C]
+    """
+    B, C, H, W = x.shape
+    assert H % ph == 0 and W % pw == 0
+    return rearrange(x, "b c (h ph) (w pw) -> b (h w) (ph pw c)", ph=ph, pw=pw)
+
+def unpatchify(patches: torch.Tensor, C: int, H: int, W: int, ph: int, pw: int) -> torch.Tensor:
+    """
+    patches: [B, N, ph*pw*C] -> [B,C,H,W]
+    """
+    h = H // ph
+    w = W // pw
+    return rearrange(patches, "b (h w) (ph pw c) -> b c (h ph) (w pw)", h=h, w=w, ph=ph, pw=pw, c=C)
+
+
+# --------------------------- reconstructions ---------------------------
+
 @torch.no_grad()
-def reconstruct_full(mae: VSMAE, img: torch.Tensor, aux: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+def composite_recon_from_mask(
+    mae: VSMAE,
+    img: torch.Tensor,
+    aux: torch.Tensor,
+    m_idx_img: torch.Tensor,
+    m_idx_aux: torch.Tensor,
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    """
+    MAE-style COMPOSITE reconstruction:
+      - visible patches copied from input
+      - masked patches replaced with model predictions
+    Uses the SAME masked indices you trained on (from return_debug).
+    (ViT-only: patch embedding tokens, encode only unmasked, decode full)
+    """
     device = next(mae.parameters()).device
     enc = mae.encoder
+
     B, Ci, H, W = img.shape
     _, Ca, _, _ = aux.shape
 
-    Hp = enc.image_height // enc.image_patch_height
-    Wp = enc.image_width  // enc.image_patch_width
-    Ha = enc.aux_height // enc.aux_patch_height
-    Wa = enc.aux_width  // enc.aux_patch_width
+    ph_i, pw_i = enc.image_patch_height, enc.image_patch_width
+    ph_a, pw_a = enc.aux_patch_height, enc.aux_patch_width
 
-    # ---- image tokens ----
+    # patchify inputs (targets + composite base)
+    img_patches = patchify(img, ph_i, pw_i) if Ci > 0 else torch.zeros((B, 0, 0), device=device)
+    aux_patches = patchify(aux, ph_a, pw_a) if Ca > 0 else torch.zeros((B, 0, 0), device=device)
+
+    Ni = img_patches.shape[1]
+    Na = aux_patches.shape[1]
+    Nt = Ni + Na
+
+    # tokens (same as training)
     if Ci > 0:
-        feat = mae.early_conv_vision(img)
-        if feat.ndim == 4:
-            feat = F.adaptive_avg_pool2d(feat, (Hp, Wp))
-            feat = feat.flatten(2).transpose(1, 2)  # [B,Hp*Wp,D]
-        ti = feat
+        ti = mae.image_patch_embed(img)  # [B,Ni,D]
         if mae.use_sincosmod_encodings:
-            ti = ti + mae.encoder_modality_embedding(torch.tensor(0, device=device)) + mae.image_enc_pos_embedding
+            ti = ti + mae.encoder_modality_embedding.weight[0] + mae.image_enc_pos_embedding
     else:
         ti = torch.zeros((B, 0, mae.encoder_dim), device=device)
 
-    # ---- aux tokens ----
     if Ca > 0:
-        feat = mae.early_conv_aux(aux)
-        if feat.ndim == 4:
-            feat = F.adaptive_avg_pool2d(feat, (Ha, Wa))
-            feat = feat.flatten(2).transpose(1, 2)  # [B,Ha*Wa,D]
-        ta = feat
+        ta = mae.aux_patch_embed(aux)    # [B,Na,D]
         if mae.use_sincosmod_encodings:
-            ta = ta + mae.encoder_modality_embedding(torch.tensor(1, device=device)) + mae.aux_enc_pos_embedding
+            ta = ta + mae.encoder_modality_embedding.weight[1] + mae.aux_enc_pos_embedding
     else:
         ta = torch.zeros((B, 0, mae.encoder_dim), device=device)
 
-    tokens = torch.cat([ti, ta], dim=1)
-    Ni = ti.shape[1]
-    Na = ta.shape[1]
+    tokens = torch.cat([ti, ta], dim=1)  # [B,Nt,D]
 
-    enc_out = enc.transformer(tokens)
-    dec_in = mae.enc_to_dec(enc_out)
+    batch_range = torch.arange(B, device=device)[:, None]
+
+    m_img = m_idx_img if Ni > 0 else torch.zeros((B, 0), dtype=torch.long, device=device)
+    m_aux = m_idx_aux if Na > 0 else torch.zeros((B, 0), dtype=torch.long, device=device)
+
+    m_idx = torch.cat([m_img, m_aux + Ni], dim=1)  # global masked positions [B, M]
+
+    # unmasked indices = complement
+    if Nt > 0:
+        keep = torch.ones((B, Nt), dtype=torch.bool, device=device)
+        if m_idx.numel() > 0:
+            keep[batch_range, m_idx] = False
+        u_idx = keep.nonzero(as_tuple=False).view(B, -1, 2)[:, :, 1]  # [B, Nu]
+    else:
+        u_idx = torch.zeros((B, 0), dtype=torch.long, device=device)
+
+    # encode only unmasked tokens (same as training)
+    enc_in = tokens[batch_range, u_idx]          # [B,Nu,D]
+    enc_out = mae.encoder.transformer(enc_in)    # [B,Nu,D]
+    dec_tok = mae.enc_to_dec(enc_out)            # [B,Nu,Dd]
+
+    # assemble decoder input with mask tokens
+    dec_tokens = torch.zeros(B, Nt, mae.decoder_dim, device=device)
+    if u_idx.numel() > 0:
+        dec_tokens[batch_range, u_idx] = dec_tok
+    if m_idx.numel() > 0:
+        dec_tokens[batch_range, m_idx] = mae.mask_token
 
     if mae.use_sincosmod_encodings:
         if Ni > 0:
-            dec_in[:, :Ni] += mae.decoder_modality_embedding(torch.tensor(0, device=device)) + mae.image_dec_pos_embedding
+            dec_tokens[:, :Ni] += mae.decoder_modality_embedding.weight[0]
+            dec_tokens[:, :Ni] += mae.image_dec_pos_embedding
         if Na > 0:
-            dec_in[:, Ni:] += mae.decoder_modality_embedding(torch.tensor(1, device=device)) + mae.aux_dec_pos_embedding
+            dec_tokens[:, Ni:] += mae.decoder_modality_embedding.weight[1]
+            dec_tokens[:, Ni:] += mae.aux_dec_pos_embedding
 
-    dec_out = mae.decoder(dec_in)
-    pred_img_patches = mae.to_pixels(dec_out[:, :Ni]) if Ni > 0 else None
-    pred_aux_patches = mae.to_aux_pixels(dec_out[:, Ni:]) if Na > 0 else None
+    dec_out = mae.decoder(dec_tokens)  # [B,Nt,Dd]
 
-    def unpatchify(patches, C, H, W, ph, pw):
-        h = H // ph; w = W // pw
-        return rearrange(patches, "b (h w) (ph pw c) -> b c (h ph) (w pw)",
-                         h=h, w=w, ph=ph, pw=pw, c=C)
+    # predict ONLY masked patches and write into composite
+    if Ni > 0 and m_img.numel() > 0:
+        pred_img = mae.to_pixels(dec_out[batch_range, m_img])  # [B,Mi,patchdim]
+        img_patches = img_patches.clone()
+        img_patches[batch_range, m_img] = pred_img
 
-    rec_img = torch.zeros_like(img)
-    if pred_img_patches is not None:
-        rec_img = unpatchify(
-            pred_img_patches, enc.image_channels, enc.image_height, enc.image_width,
-            enc.image_patch_height, enc.image_patch_width
-        ).clamp(0, 1)
+    if Na > 0 and m_aux.numel() > 0:
+        pred_aux = mae.to_aux_pixels(dec_out[batch_range, m_aux + Ni])
+        aux_patches = aux_patches.clone()
+        aux_patches[batch_range, m_aux] = pred_aux
 
-    rec_aux = torch.zeros_like(aux)
-    if pred_aux_patches is not None:
-        rec_aux = unpatchify(
-            pred_aux_patches, enc.aux_channels, enc.aux_height, enc.aux_width,
-            enc.aux_patch_height, enc.aux_patch_width
-        ).clamp(0, 1)
+    # unpatchify composite
+    comp_img = torch.zeros_like(img)
+    if Ni > 0:
+        comp_img = unpatchify(img_patches, enc.image_channels, enc.image_height, enc.image_width, ph_i, pw_i).clamp(0, 1)
 
-    return rec_img, rec_aux
+    comp_aux = torch.zeros_like(aux)
+    if Na > 0:
+        comp_aux = unpatchify(aux_patches, enc.aux_channels, enc.aux_height, enc.aux_width, ph_a, pw_a).clamp(0, 1)
+
+    return comp_img, comp_aux
+
+
+# --------------------------- visualization helpers ---------------------------
 
 def _draw_patch_boxes_single(
     img: torch.Tensor,
@@ -181,7 +244,6 @@ def _draw_patch_boxes_single(
     C, H, W = img.shape
     assert C >= 3, "Need at least 3 channels for RGB drawing"
 
-    grid_h = H // ph
     grid_w = W // pw
     device = img.device
 
@@ -205,14 +267,15 @@ def _draw_patch_boxes_single(
     out = out * (1.0 - alpha * mask) + color_tensor * (alpha * mask)
     return out
 
+
 @torch.no_grad()
 def save_preview(
     step: int,
     out_dir: str,
-    img_aug: torch.Tensor,
-    aux_aug: torch.Tensor,
-    rec_img: torch.Tensor,
-    rec_aux: torch.Tensor,
+    img: torch.Tensor,
+    aux: torch.Tensor,
+    recon_img: torch.Tensor,
+    recon_aux: torch.Tensor,
     m_idx_img: torch.Tensor,
     m_idx_aux: torch.Tensor,
     Ni: int,
@@ -222,33 +285,41 @@ def save_preview(
     frame_rgb=3,
     frame_aux=3,
 ):
+    """
+    Saves ONLY 6 images:
+      - orig modality1 + modality2
+      - masked modality1 + modality2 (box overlay)
+      - reconstructed modality1 + modality2 (composite recon)
+    """
     import torchvision.utils as vutils
     Path(out_dir).mkdir(parents=True, exist_ok=True)
 
-    b0_img = img_aug[0, :frame_rgb].clamp(0, 1)
-    b0_aux = aux_aug[0, :frame_aux].clamp(0, 1)
-    r0_img = rec_img[0, :frame_rgb].clamp(0, 1)
-    r0_aux = rec_aux[0, :frame_aux].clamp(0, 1)
+    # use LATEST frame in the stack
+    orig1 = img[0, -frame_rgb:].clamp(0, 1)
+    orig2 = aux[0, -frame_aux:].clamp(0, 1)
 
-    boxed_rgb = _draw_patch_boxes_single(b0_img, m_idx_img[0], patch_h, patch_w, Ni) if (Ni > 0 and m_idx_img.numel() > 0) else b0_img
-    boxed_aux = _draw_patch_boxes_single(b0_aux, m_idx_aux[0], patch_h, patch_w, Na) if (Na > 0 and m_idx_aux.numel() > 0) else b0_aux
+    rec1 = recon_img[0, -frame_rgb:].clamp(0, 1)
+    rec2 = recon_aux[0, -frame_aux:].clamp(0, 1)
 
-    vutils.save_image(b0_img,    os.path.join(out_dir, f"step_{step:06d}_aug_rgb.png"))
-    vutils.save_image(b0_aux,    os.path.join(out_dir, f"step_{step:06d}_aug_aux.png"))
-    vutils.save_image(boxed_rgb, os.path.join(out_dir, f"step_{step:06d}_masked_rgb.png"))
-    vutils.save_image(boxed_aux, os.path.join(out_dir, f"step_{step:06d}_masked_aux.png"))
-    vutils.save_image(r0_img,    os.path.join(out_dir, f"step_{step:06d}_rec_rgb.png"))
-    vutils.save_image(r0_aux,    os.path.join(out_dir, f"step_{step:06d}_rec_aux.png"))
+    masked1 = _draw_patch_boxes_single(orig1, m_idx_img[0], patch_h, patch_w, Ni) if (Ni > 0 and m_idx_img.numel() > 0) else orig1
+    masked2 = _draw_patch_boxes_single(orig2, m_idx_aux[0], patch_h, patch_w, Na) if (Na > 0 and m_idx_aux.numel() > 0) else orig2
+
+    vutils.save_image(orig1,   os.path.join(out_dir, f"step_{step:06d}_orig_mod1.png"))
+    vutils.save_image(orig2,   os.path.join(out_dir, f"step_{step:06d}_orig_mod2.png"))
+    vutils.save_image(masked1, os.path.join(out_dir, f"step_{step:06d}_mask_mod1.png"))
+    vutils.save_image(masked2, os.path.join(out_dir, f"step_{step:06d}_mask_mod2.png"))
+    vutils.save_image(rec1,    os.path.join(out_dir, f"step_{step:06d}_recon_mod1.png"))
+    vutils.save_image(rec2,    os.path.join(out_dir, f"step_{step:06d}_recon_mod2.png"))
 
     if wandb.run is not None:
         wandb.log(
             {
-                "preview/aug_rgb": wandb.Image(b0_img.detach().cpu()),
-                "preview/aug_aux": wandb.Image(b0_aux.detach().cpu()),
-                "preview/masked_rgb": wandb.Image(boxed_rgb.detach().cpu()),
-                "preview/masked_aux": wandb.Image(boxed_aux.detach().cpu()),
-                "preview/rec_rgb": wandb.Image(r0_img.detach().cpu()),
-                "preview/rec_aux": wandb.Image(r0_aux.detach().cpu()),
+                "preview/orig_mod1": wandb.Image(orig1.detach().cpu()),
+                "preview/orig_mod2": wandb.Image(orig2.detach().cpu()),
+                "preview/mask_mod1": wandb.Image(masked1.detach().cpu()),
+                "preview/mask_mod2": wandb.Image(masked2.detach().cpu()),
+                "preview/recon_mod1": wandb.Image(rec1.detach().cpu()),
+                "preview/recon_mod2": wandb.Image(rec2.detach().cpu()),
             },
             step=step,
         )
@@ -277,13 +348,13 @@ def main():
     p.add_argument("--decoder_heads", type=int, default=4)
 
     # Train
-    p.add_argument("--steps", type=int, default=100_000)
+    p.add_argument("--steps", type=int, default=10_000)
     p.add_argument("--batch_size", type=int, default=32)
     p.add_argument("--encoder_lr", type=float, default=1e-4)
     p.add_argument("--decoder_lr", type=float, default=3e-4)
     p.add_argument("--log_every", type=int, default=100)
-    p.add_argument("--save_every", type=int, default=5_000)
-    p.add_argument("--vis_every", type=int, default=10_000)
+    p.add_argument("--save_every", type=int, default=1_000)
+    p.add_argument("--vis_every", type=int, default=1_000)
     p.add_argument("--out", type=str, default="vtmae_pretrained.pt")
 
     # WandB
@@ -355,10 +426,8 @@ def main():
         auxloss_multiplier=args.aux_loss,
     ).to(device)
 
-    enc_params = list(mae.encoder.parameters())
-    enc_params += list(mae.early_conv_vision.parameters())
-    enc_params += list(mae.early_conv_aux.parameters())
-    encoder_opt = torch.optim.AdamW(enc_params, lr=args.encoder_lr, weight_decay=0.05)
+    # ViT-only: encoder optimizer just uses mae.encoder
+    encoder_opt = torch.optim.AdamW(list(mae.encoder.parameters()), lr=args.encoder_lr, weight_decay=0.05)
 
     dec_params = (
         list(mae.decoder.parameters())
@@ -421,20 +490,23 @@ def main():
         if args.save_every and (step % args.save_every == 0):
             torch.save(mae.state_dict(), args.out)
 
-        if step % args.vis_every == 0:
+        if args.vis_every and (step % args.vis_every == 0):
             mae.eval()
             with torch.no_grad():
                 _, dbg = mae({"image": img_aug, "image_aux": aux_aug}, return_debug=True)
-                m_idx_img = dbg["m_idx_img"]
-                m_idx_aux = dbg["m_idx_aux"]
+                m_idx_img = dbg["m_idx_img"]  # [B, Mi]
+                m_idx_aux = dbg["m_idx_aux"]  # [B, Ma]
                 Ni = dbg["Ni"]
                 Na = dbg["Na"]
-                rec_img, rec_aux = reconstruct_full(mae, img_aug, aux_aug)
+
+                recon_img, recon_aux = composite_recon_from_mask(mae, img_aug, aux_aug, m_idx_img, m_idx_aux)
+
             mae.train()
 
             save_preview(
                 step, out_images_dir,
-                img_aug, aux_aug, rec_img, rec_aux,
+                img_aug, aux_aug,
+                recon_img, recon_aux,
                 m_idx_img=m_idx_img, m_idx_aux=m_idx_aux,
                 Ni=Ni, Na=Na,
                 patch_h=mae.encoder.image_patch_height,
@@ -450,36 +522,9 @@ def main():
 if __name__ == "__main__":
     main()
 
-
 """
 
-python pretrain_vtmae.py --env_type mw --seg_loss 0.01 --wandb --wandb_run mw_seg0p01
 
-
-
-commands = [
-
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.01 --wandb --wandb_run mw_seg0p01",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.03 --wandb --wandb_run mw_seg0p03",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.10 --wandb --wandb_run mw_seg0p10",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.30 --wandb --wandb_run mw_seg0p30",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.50 --wandb --wandb_run mw_seg0p50",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.75 --wandb --wandb_run mw_seg0p75",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 1.00 --wandb --wandb_run mw_seg1p00",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 1.50 --wandb --wandb_run mw_seg1p50",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 2.00 --wandb --wandb_run mw_seg2p00",
-
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.01 --wandb --wandb_run mw_seg0p01",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.03 --wandb --wandb_run mw_seg0p03",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.10 --wandb --wandb_run mw_seg0p10",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.30 --wandb --wandb_run mw_seg0p30",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.50 --wandb --wandb_run mw_seg0p50",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.75 --wandb --wandb_run mw_seg0p75",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 1.00 --wandb --wandb_run mw_seg1p00",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 1.50 --wandb --wandb_run mw_seg1p50",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 2.00 --wandb --wandb_run mw_seg2p00",
-
-]
 
 
 
@@ -491,13 +536,19 @@ commands = [
 4: behindGripper
 5: gripperPOV
 
-
 python pretrain_vtmae.py \
   --camera_main topview \
   --camera_aux corner \
+  --frame_stack 3 \
+  --action_repeat 2 \
+  --patch_size 6 \
+  --masking_ratio_a 1.0 \
+  --masking_ratio_b 0.75 \
+  --aux_loss 1.0 \
+  --batch_size 32 \
   --wandb \
   --wandb_project vtmae-only \
-  --wandb_run mw_rgb_rgb_gripper_corner
+  --wandb_run mw_vitonly_topview_corner
 
 
 """

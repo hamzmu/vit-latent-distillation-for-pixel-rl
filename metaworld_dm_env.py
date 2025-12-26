@@ -227,6 +227,7 @@ def make_metaworld(
         )
         frame_keys.append(aux_key)
 
+    env = FlipPixelsWrapper(env, keys=tuple(frame_keys))
     env = FrameStackWrapper(env, frame_stack, frame_keys)
     env = ExtendedTimeStepWrapper(env, has_success_metric=True)
     return env

@@ -1,6 +1,7 @@
 # =========================
 # pretrain_models.py
 # (NO segmentation anywhere)
+# ViT-only (NO CNN anywhere)
 # =========================
 from __future__ import annotations
 
@@ -10,22 +11,6 @@ from torch import nn
 import torch.nn.functional as F
 from einops.layers.torch import Rearrange
 from positional_encodings.torch_encodings import PositionalEncoding2D
-
-
-class EarlyCNN(nn.Module):
-    def __init__(self, in_channels: int, encoder_dim: int):
-        super().__init__()
-        self.conv1 = nn.Conv2d(in_channels, encoder_dim // 8, 4, stride=2, padding=1)
-        self.conv2 = nn.Conv2d(encoder_dim // 8, encoder_dim // 4, 4, stride=2, padding=1)
-        self.conv3 = nn.Conv2d(encoder_dim // 4, encoder_dim // 2, 4, stride=2, padding=1)
-        self.conv4 = nn.Conv2d(encoder_dim // 2, encoder_dim, 1)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
-        x = self.conv4(x)
-        return x
 
 
 class VST(nn.Module):
@@ -89,7 +74,7 @@ class VST(nn.Module):
         image_patch_dim = image_channels * image_patch_height * image_patch_width
         aux_patch_dim = aux_channels * aux_patch_height * aux_patch_width
 
-        # patch embedding paths (used to form MAE targets and/or tokens)
+        # patch embeddings -> token dim
         self.image_to_patch_embedding = nn.Sequential(
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=image_patch_height, p2=image_patch_width),
             nn.LayerNorm(image_patch_dim),
@@ -114,6 +99,7 @@ class VST(nn.Module):
 class VSMAE(nn.Module):
     """
     Vision + Aux-Image MAE with separate randomized masking per modality.
+    ViT-only tokenization (patch embedding) — NO CNN.
     - image is REQUIRED (x["image"])
     - aux image is OPTIONAL (x.get("image_aux"))
     Both streams reconstruct with MSE on raw patch pixels.
@@ -152,25 +138,21 @@ class VSMAE(nn.Module):
         Wp = self.encoder.image_width // self.encoder.image_patch_width
         Ha = self.encoder.aux_height // self.encoder.aux_patch_height
         Wa = self.encoder.aux_width // self.encoder.aux_patch_width
-
         self.Hp, self.Wp = Hp, Wp
         self.Ha, self.Wa = Ha, Wa
 
-        # Early-CNN tokenizers + pooling to patch grid
-        img_ch = self.encoder.image_channels
-        aux_ch = self.encoder.aux_channels
-        self.early_conv_vision = EarlyCNN(img_ch, encoder_dim)
-        self.early_conv_aux = EarlyCNN(aux_ch, encoder_dim)
-        self.cnn_pool_img = nn.AdaptiveAvgPool2d((Hp, Wp))
-        self.cnn_pool_aux = nn.AdaptiveAvgPool2d((Ha, Wa))
-        print("VT-MAE: Early-CNN tokeniser (pooled to patch grid) — aux optional")
+        print("VT-MAE: ViT-only patch tokeniser — aux optional (NO CNN)")
 
-        # retain patch→emb layers for MAE targets (we use raw patch pixels as targets)
-        self.image_to_patch = encoder.image_to_patch_embedding[0]
-        pixel_values_per_patch = encoder.image_to_patch_embedding[2].weight.shape[-1]
+        # retain patchify (raw pixels) + get pixel dim per patch from Linear weight
+        self.image_to_patch = encoder.image_to_patch_embedding[0]  # Rearrange only (raw pixels per patch)
+        pixel_values_per_patch = encoder.image_to_patch_embedding[2].weight.shape[-1]  # patch_dim
 
         self.aux_to_patch = encoder.aux_to_patch_embedding[0]
         aux_values_per_patch = encoder.aux_to_patch_embedding[2].weight.shape[-1]
+
+        # full token embeddings (raw patch -> D)
+        self.image_patch_embed = encoder.image_to_patch_embedding
+        self.aux_patch_embed = encoder.aux_to_patch_embedding
 
         # decoder + projections
         self.enc_to_dec = nn.Linear(encoder_dim, decoder_dim) if encoder_dim != decoder_dim else nn.Identity()
@@ -203,11 +185,11 @@ class VSMAE(nn.Module):
         # projection on pooled rep (for get_embeddings)
         self.repr_ln = nn.LayerNorm(self.encoder_dim)
 
-    # -------------- token helpers --------------
-    def _tokens_from_image(self, x_img: torch.Tensor) -> torch.Tensor:
-        feat = self.early_conv_vision(x_img)   # [B, D, Hc, Wc]
-        feat = self.cnn_pool_img(feat)         # [B, D, Hp, Wp]
-        return feat.flatten(2).transpose(1, 2) # [B, Hp*Wp, D]
+    # -------------- token helpers (ViT-only) --------------
+    def _tokens_from_image(self, x_img: torch.Tensor, B: int, device: torch.device, use_vision: bool) -> torch.Tensor:
+        if not use_vision:
+            return torch.zeros((B, 0, self.encoder_dim), device=device)
+        return self.image_patch_embed(x_img)  # [B, Hp*Wp, D]
 
     def _tokens_from_aux_optional(
         self,
@@ -218,9 +200,7 @@ class VSMAE(nn.Module):
     ) -> torch.Tensor:
         if (not use_aux) or (x_aux is None):
             return torch.zeros((B, 0, self.encoder_dim), device=device)
-        feat = self.early_conv_aux(x_aux)      # [B, D, Hc, Wc]
-        feat = self.cnn_pool_aux(feat)         # [B, D, Ha, Wa]
-        return feat.flatten(2).transpose(1, 2) # [B, Ha*Wa, D]
+        return self.aux_patch_embed(x_aux)  # [B, Ha*Wa, D]
 
     def forward(self, x: dict, *, use_vision: bool = True, use_aux: bool = True, **kwargs):
         """
@@ -235,7 +215,7 @@ class VSMAE(nn.Module):
         x_aux = x.get("image_aux", None)
         use_aux = bool(use_aux and (x_aux is not None) and isinstance(x_aux, torch.Tensor) and x_aux.numel() > 0)
 
-        # BUG A FIX: correct raw patch dims when modality disabled
+        # raw patch targets (pixels)
         img_patch_dim = self.encoder.image_channels * self.encoder.image_patch_height * self.encoder.image_patch_width
         aux_patch_dim = self.encoder.aux_channels * self.encoder.aux_patch_height * self.encoder.aux_patch_width
 
@@ -249,7 +229,8 @@ class VSMAE(nn.Module):
             aux_patches = torch.zeros((B, 0, aux_patch_dim), device=device)
             Na = 0
 
-        img_tok = self._tokens_from_image(x["image"]) if use_vision else torch.zeros((B, 0, self.encoder_dim), device=device)
+        # token embeddings (ViT patch embedding)
+        img_tok = self._tokens_from_image(x["image"], B, device, use_vision)
         aux_tok = self._tokens_from_aux_optional(x_aux, B, device, use_aux)
 
         if self.use_sincosmod_encodings and img_tok.shape[1] > 0:
@@ -346,7 +327,7 @@ class VSMAE(nn.Module):
         x_aux = x.get("image_aux", None)
         use_aux = bool(use_aux and (x_aux is not None) and isinstance(x_aux, torch.Tensor) and x_aux.numel() > 0)
 
-        img_tok = self._tokens_from_image(x["image"]) if use_vision else torch.zeros((B, 0, self.encoder_dim), device=device)
+        img_tok = self._tokens_from_image(x["image"], B, device, use_vision)
         aux_tok = self._tokens_from_aux_optional(x_aux, B, device, use_aux)
 
         if self.use_sincosmod_encodings and img_tok.shape[1] > 0:
