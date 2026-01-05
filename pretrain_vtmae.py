@@ -37,6 +37,14 @@ def set_seed(seed: int):
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
+def count_params(module: torch.nn.Module, trainable_only: bool = False) -> int:
+    if trainable_only:
+        return sum(p.numel() for p in module.parameters() if p.requires_grad)
+    return sum(p.numel() for p in module.parameters())
+
+def fmt(n: int) -> str:
+    return f"{n:,}"
+
 @torch.no_grad()
 def _get_obs_dict(ts) -> Dict[str, np.ndarray]:
     """
@@ -218,11 +226,25 @@ def composite_recon_from_mask(
     # unpatchify composite
     comp_img = torch.zeros_like(img)
     if Ni > 0:
-        comp_img = unpatchify(img_patches, enc.image_channels, enc.image_height, enc.image_width, ph_i, pw_i).clamp(0, 1)
+        comp_img = unpatchify(
+            img_patches,
+            enc.image_channels,
+            enc.image_height,
+            enc.image_width,
+            ph_i,
+            pw_i
+        ).clamp(0, 1)
 
     comp_aux = torch.zeros_like(aux)
     if Na > 0:
-        comp_aux = unpatchify(aux_patches, enc.aux_channels, enc.aux_height, enc.aux_width, ph_a, pw_a).clamp(0, 1)
+        comp_aux = unpatchify(
+            aux_patches,
+            enc.aux_channels,
+            enc.aux_height,
+            enc.aux_width,
+            ph_a,
+            pw_a
+        ).clamp(0, 1)
 
     return comp_img, comp_aux
 
@@ -426,6 +448,17 @@ def main():
         auxloss_multiplier=args.aux_loss,
     ).to(device)
 
+    # ---- NEW: parameter counts ----
+    print(f"[Params] VST total: {fmt(count_params(v))} | trainable: {fmt(count_params(v, True))}")
+    print(f"[Params] VSMAE total: {fmt(count_params(mae))} | trainable: {fmt(count_params(mae, True))}")
+    print(
+        "[Params breakdown] "
+        f"encoder={fmt(count_params(mae.encoder))} "
+        f"decoder={fmt(count_params(mae.decoder))} "
+        f"to_pixels={fmt(count_params(mae.to_pixels))} "
+        f"to_aux_pixels={fmt(count_params(mae.to_aux_pixels))}"
+    )
+
     # ViT-only: encoder optimizer just uses mae.encoder
     encoder_opt = torch.optim.AdamW(list(mae.encoder.parameters()), lr=args.encoder_lr, weight_decay=0.05)
 
@@ -521,6 +554,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 """
 
