@@ -24,13 +24,15 @@ Example output across 1k to 10k timesteps. In this example we are reconstructing
 
 In the images below left images are the input the base cameras setup. second column are the masked(blue) and unmasked patches, where the unmaked patches are passed through the encoder. and the right column in the reconstruction of both camera angles from only the unmasked patches:
 ## 1k Timesteps
-- Early learning, the
+- Early learning, the resconstruction is fairly blurry for both modalities, but especially for the 100% masked one which is expected
 ![alt text](image.png)
 
 ## 5k Timesteps
+- better reconstruction and seeing less edges of patches when reconstructing. button area still blurry and general reconstruction is staggered
 ![alt text](image-1.png)
 
 ## 10k Timesteps
+- almost identical reconstruction
 ![alt text](image-2.png)
 
 ## Learning Curves 
