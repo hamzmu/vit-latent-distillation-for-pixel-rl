@@ -6,45 +6,33 @@ channels:
 dependencies:
   - python=3.10
   - pip
-
-  # torch + cuda
   - pytorch=2.2.*
   - torchvision=0.17.*
   - pytorch-cuda=11.8
-
-  # keep basic build tooling
   - setuptools
   - wheel
-
-  # (optional but often helps EGL/gl)
   - libegl
   - libgl
   - libglvnd
   - libopengl
 
   - pip:
-      # IMPORTANT: match your working env
-      - numpy==1.24.4
 
-      # model
+      - numpy==1.24.4
       - einops
       - vit-pytorch
       - positional-encodings
 
-      # env/sim
+      # sim stuff
       - mujoco==3.1.3
       - dm-env==1.6
       - dm-control==1.0.16
       - metaworld==3.0.0
       - gymnasium
 
-      # wrappers deps
+      
       - scikit-image
-
-      # logging (optional)
       - wandb
-
-      # headless helpers
       - glfw
       - PyOpenGL
       - opencv-python-headless<4.11
