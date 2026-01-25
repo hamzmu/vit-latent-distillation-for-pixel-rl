@@ -1,16 +1,9 @@
-# sear/models/pretrain_vtmae.py
-# VT-MAE pretrain (headless DMControl). DrQ-style aligned shift aug (RGB + seg).
-# Saves six separate images at each preview step:
-#   step_xxxxxx_aug_rgb.png, step_xxxxxx_aug_seg.png,
-#   step_xxxxxx_masked_rgb.png, step_xxxxxx_masked_seg.png,
-#   step_xxxxxx_rec_rgb.png, step_xxxxxx_rec_seg.png
 
 from __future__ import annotations
 import os
 import argparse
 from typing import Dict, Tuple
 
-# ---- Headless MuJoCo (must be before dm_control import) ----
 os.environ.setdefault("MUJOCO_GL", "egl")
 os.environ.setdefault("EGL_PLATFORM", "surfaceless")
 os.environ.pop("DISPLAY", None)
@@ -536,83 +529,12 @@ if __name__ == "__main__":
     main()
 
 
-
 """
+sample run:
 
-
-if __name__ == "__main__":
-    import sys
-    import subprocess
-
-    # If we pass --sweep, run all seg_loss sweeps sequentially.
-    if "--sweep" in sys.argv:
-        # Remove --sweep so it doesn't get forwarded to child processes
-        sys.argv = [arg for arg in sys.argv if arg != "--sweep"]
-
-        commands = []
-
-        # # ---- DMC (walker_walk) – seg_loss sweep ----
-        # dmc_segs = [0.01, 0.03, 0.10, 0.30, 0.50, 0.75, 1.00, 1.50, 2.00]
-        # for seg in dmc_segs:
-        #     run_name = f"dmc_seg{str(seg).replace('.', 'p')}"
-        #     commands.append([
-        #         "python", "pretrain_vtmae.py",
-        #         "--env_type", "dmc",
-        #         "--seg_loss", str(seg),
-        #         "--wandb",
-        #         "--wandb_run", run_name,
-        #     ])
-
-        # ---- MetaWorld (button-press-topdown-v3) – seg_loss sweep ----
-        mw_segs = [0.03, 0.10, 0.30, 0.50, 0.75, 1.00, 1.50, 2.00]
-        for seg in mw_segs:
-            run_name = f"mw_seg{str(seg).replace('.', 'p')}"
-            commands.append([
-                "python", "pretrain_vtmae.py",
-                "--env_type", "mw",
-                "--seg_loss", str(seg),
-                "--wandb",
-                "--wandb_run", run_name,
-            ])
-
-        print(f"Launching {len(commands)} runs sequentially...")
-        for cmd in commands:
-            print("\n>>> Running:", " ".join(cmd), flush=True)
-            # Each call runs one full pretraining run
-            subprocess.run(cmd, check=True)
-
-    else:
-        # Normal single-run behavior
-        main()
-
-"""
-
-"""
-
-
-commands = [
-
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.01 --wandb --wandb_run mw_seg0p01",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.03 --wandb --wandb_run mw_seg0p03",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.10 --wandb --wandb_run mw_seg0p10",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.30 --wandb --wandb_run mw_seg0p30",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.50 --wandb --wandb_run mw_seg0p50",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 0.75 --wandb --wandb_run mw_seg0p75",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 1.00 --wandb --wandb_run mw_seg1p00",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 1.50 --wandb --wandb_run mw_seg1p50",
-    "python extra/pretrain_vtmae.py --env_type dmc --seg_loss 2.00 --wandb --wandb_run mw_seg2p00",
-
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.01 --wandb --wandb_run mw_seg0p01",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.03 --wandb --wandb_run mw_seg0p03",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.10 --wandb --wandb_run mw_seg0p10",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.30 --wandb --wandb_run mw_seg0p30",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.50 --wandb --wandb_run mw_seg0p50",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 0.75 --wandb --wandb_run mw_seg0p75",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 1.00 --wandb --wandb_run mw_seg1p00",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 1.50 --wandb --wandb_run mw_seg1p50",
-    "python extra/pretrain_vtmae.py --env_type mw --seg_loss 2.00 --wandb --wandb_run mw_seg2p00",
-
-]
+pretrain_vtmae.py --camera_main topview --camera_aux corner --frame_stack 3 
+--action_repeat 2 --patch_size 6 --masking_ratio_a 1.0 --masking_ratio_b 0.75 
+--aux_loss 1.0 --batch_size 32 --wandb --wandb_project vtmae-only --wandb_run mw_vitonly_topview_corner
 
 
 """

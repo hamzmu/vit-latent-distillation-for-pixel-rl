@@ -1,4 +1,4 @@
-name: vsmae
+name: multi-vit
 channels:
   - pytorch
   - nvidia

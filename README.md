@@ -1,133 +1,45 @@
-# VSMAE - Vision-based State Masked Autoencoder
+# Multi-modal Vision Transformer Masked Autoencoding
 
-## 🧠 Overview  
-This repository contains setup and training instructions for running **Sim2Real** and **Imitation Learning** experiments using the **VSMAE** (Vision-based State Masked Autoencoder) framework.  
-The project leverages multimodal reinforcement learning with visual and segmentation-based representations for improved transfer and policy learning.
+## Overview  
+* Two-stream Vision Transformer with a shared 4-layer backbone that jointly encodes synchronized multi-camera views into a shared latent space.
 
----
-
-## ⚙️ Setup Instructions
-
-### 1. Environment Setup
-1. `cd MULTIMODAL_RL`  
-2. `conda env create -f vsmae_env.yml`  
-3. `conda activate vsmae`  
-4. `pip install -e .`
-5. `export MUJOCO_GL='egl'`
----
-
-## 🚀 Running Training
-
-You can run training using either of the following options:
-
-### Option A — From the Root Directory
-```bash
-python sear/train.py agent@_global_=mars     task@_global_=metaworld_button-press-topdown-v3     hydra.run.dir=exp_local/${wandb.run_name}     use_wandb=true wandb.run_name=mw_button_press_topdown_no_seg
-```
-
-### Option B — Sequential Training Script
-```bash
-python seq_training.py
-```
-
----
-
-## 🎨 Running with Single RGB Inputs
-
-For single RGB inputs (no segmentation), disable segmentation with the following flag:
-```bash
-python sear/train.py agent@_global_=mars     task@_global_=metaworld_button-press-topdown-v3     hydra.run.dir=exp_local/${wandb.run_name}     use_wandb=true wandb.run_name=mw_button_press_topdown_no_seg     add_segmentation_to_obs=False
-```
-
----
-
-## 📂 Key Files and Directories
-
-| File / Directory | Description |
-|------------------|--------------|
-| `sear/agents/mars.py` | Core agent implementation (policy, loss, and training logic) |
-| `sear/cfgs/agent/mars.yaml` | Configuration file for the MARS agent |
-| `sear/train.py` | Main training script controlling training and evaluation |
-| `sear/models/pretrain_models.py` | ViT / MAE model definitions used for multimodal feature encoding |
+* Uses a Masked Autoencoding (MAE) objective with independent modality masking and learned embeddings for cross-view supervision and pixel-level reconstruction. 
+* Pretrained with AdamW + MSE on Meta-World and DeepMind Control, producing transferable visual representations that improve downstream RL policy convergence.
 
 ---
 
 
+### Environment Setup
+1. `git clone https://github.com/hamzmu/MultiModalViT.git`  
+2. `cd MultiModalViT # if not already`
+3. `conda env create -f vsmae_env.yml`  
+4. `conda activate multi-vit`  
+5. `pretrain_vtmae.py `
+6.  Or be specific and control the camera angles, modalitiy masking raito, aux loss weight
+`pretrain_vtmae.py --camera_main topview --camera_aux corner --frame_stack 3 
+--action_repeat 2 --patch_size 6 --masking_ratio_a 1.0 --masking_ratio_b 0.75 
+--aux_loss 1.0 --batch_size 32 --wandb --wandb_project vtmae-only --wandb_run mw_vitonly_topview_corner`
+
+Example output across 1k to 10k timesteps. In this example we are reconstructing the top view of the camera using only 25% of patches from the size view camera. This trains the encoder to develop multi cam understanding in the latent with minimal modality. 
+
+In the images below left images are the input the base cameras setup. second column are the masked(blue) and unmasked patches, where the unmaked patches are passed through the encoder. and the right column in the reconstruction of both camera angles from only the unmasked patches:
+## 1k Timesteps
+- Early learning, the
+![alt text](image.png)
+
+## 5k Timesteps
+![alt text](image-1.png)
+
+## 10k Timesteps
+![alt text](image-2.png)
+
+## Learning Curves 
+![alt text](image-3.png)
 
 
 
+In theory if you extend this with more camera modalities you are able to have a stronger preception of the environment with a single cam (useful for RL) but have information of multi-camera views (similar to how humans have a multiview understanding of a setting/scene even when we have stereo vision)
+
+Feel free to play around with different making ratio of each modality!
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-IGNORE BELOW------
-To train you need to have 3 files:
-1) This code base
-2) the sif file: 'vsmae.sif'
-3) the SLURM files: 'tests.sh' and 'launch.sh'
-
-I have emailed the SLURM file and sif file to you at XXX
-
-within your cluster, setup a file system as follows:
-
-vsmae_tests/
-├── apptainer/
-│   └── vsmae.sif
-│
-├── projects/
-│   └── VSMAE/              
-│
-└── sbatch_dir/
-    ├── tests.sh
-    └── launch.sh
-
-
-Next you want to find the path of the following which should look similar to what I have beside:
-
-SIF_PATH=".../vsmae_tests/apptainer/vsmae.sif"
-HOST_WORKDIR=".../vsmae_tests/projects/VSMAE"
-
-Do the following afterwards:
-
-1) Edit 'tests.sh' and on line 20 and 21, replace SIF_PATH and HOST_WORKDIR with yourown paths
-2) Edit 'launch.sh' and on line 4 and 5, replace SIF_PATH and HOST_WORKDIR with yourown paths 
-
-
-Finally you are ready to run these tests. Run the following:
-sbatch launch.sh
-
-
-Structure i'll have:
-
-public-mars: 
-* open sourced mars RL with full code implementation + yml file
-
-private-mars:
-* same as public + the following:
-* evaluations, video, extras, recordings, .sh files, sif files
-
-
-
-TODO:
-* personalize to mars, repalce sear references
-* remove comments and simplify code
-* make sure everything works
-* do a full from scratch yml setup
-* make mars modular - ie accept single and double inputs, and allow vision only policy
-* verify blurry vison
-* rerun best hyper paramers tests
-* run ted as well in the future
-* merge blurry wrapper and wrapper
-* update setup.py and persnalize
-* personalize mars
