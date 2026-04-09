@@ -1,0 +1,138 @@
+
+  Final eval at 100k:
+
+  - subset_sac_unfrozen: full-view success 1.0, single-view success 0.85 / 0.70 / 0.55 in
+    eval_1.csv (/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/seq_runs/
+    button_press_seq_20260406_002757/subset_sac_unfrozen/logs/eval_1.csv)
+  - subset_sac_frozen: 0.0 success on every eval view in eval_1.csv (/home/medcvr/Desktop/hamza/
+    multicam-vit/MultiModalViT/mad/seq_runs/button_press_seq_20260406_002757/subset_sac_frozen/
+    logs/eval_1.csv)
+  - old mad baseline: already 1.0 on all views by 25k and still 1.0 at 250k in eval_1.csv (/home/
+    medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/seq_runs/mad_baseline/mad_baseline/logs/
+    eval_1.csv)
+
+  So the ranking is:
+
+  1. mad baseline
+  2. subset_sac_unfrozen
+  3. subset_sac_frozen
+
+  What The Logs Say
+  The new logging is useful because it shows why.
+
+  For subset_sac_unfrozen, the policy learns, but the encoder drifts badly:
+
+  - latent_subset_to_full_mse grows from about 0.0002 to 0.341
+  - latent_subset_to_full_cos falls from about 0.9998 to 0.698
+  - encoder_grad_norm explodes from 0.34 to 57k
+  - critic_loss grows from 0.43 to 1294
+
+  See train_1.csv (/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/seq_runs/
+  button_press_seq_20260406_002757/subset_sac_unfrozen/logs/train_1.csv).
+
+  Interpretation: unfrozen RL is solving the task partly by rewriting the pretrained latent space.
+  That helps full-view control, but it destroys the subset/full alignment you trained the ViT for.
+  That is the most likely reason single-camera success is still mediocre.
+
+  For subset_sac_frozen, the opposite happens:
+
+  - latent alignment stays excellent: MSE stays around 0.001, cosine around 0.999
+  - losses stay much more bounded
+  - but eval success never gets off the floor
+
+  See train_1.csv (/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/seq_runs/
+  button_press_seq_20260406_002757/subset_sac_frozen/logs/train_1.csv).
+
+  Interpretation: the frozen latent is stable, but this policy setup is not extracting a successful
+  controller from it under the current hyperparameters.
+
+  One important confound: this comparison is not clean, because the two runs used different batch
+  sizes. The unfrozen run used 32, the frozen run used 256 from seq_training.py (/home/medcvr/
+  Desktop/hamza/multicam-vit/MultiModalViT/mad/seq_training.py#L35) and seq_training.py (/home/
+  medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/seq_training.py#L196). So some of the gap may
+  be optimization, not just frozen vs unfrozen.
+
+  What To Improve Next
+  The next runs I would do are:
+
+  - Run frozen and unfrozen with the same batch size, preferably 32 or 64. Right now the comparison
+    is confounded.
+  - Add vit_latent_full_sac to the sequence. It may be that subset-SAC on a frozen ViT is too hard,
+    while plain full-latent SAC would learn.
+  - Lower vit_encoder_lr for unfrozen runs. Try 1e-6 or 3e-6. 1e-5 is clearly causing encoder
+    drift.
+  - Add an unfreeze schedule: keep the ViT frozen for the first 25k-50k steps, then unfreeze.
+  - Add encoder regularization if unfrozen: keep the RL-finetuned latent close to the initial
+    pretrained latent or preserve subset/full alignment during RL. The current logs strongly
+    suggest this is needed.
+  - Evaluate more often early, like every 10k. The MAD baseline solved the task very early, so
+    waiting 25k hides useful learning differences.
+
+  solve the task. The next experiments should focus on preserving latent alignment while still
+  letting the policy adapt.
+
+  If you want, I can patch mad/seq_training.py (/home/medcvr/Desktop/hamza/multicam-vit/
+  MultiModalViT/mad/seq_training.py) to run the next clean comparison set:
+
+  - mad
+  - vit_latent_full_sac frozen
+  - vit_latent_subset_sac frozen
+  - vit_latent_subset_sac unfrozen with smaller vit_encoder_lr and matched batch size
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+• seq_training.py (/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/
+  seq_training.py#L186) now runs only 3 unfrozen vit_latent_subset_sac variants. mad is
+  commented out in the methods list at seq_training.py (/home/medcvr/Desktop/hamza/multicam-
+  vit/MultiModalViT/mad/seq_training.py#L222), and the frozen subset run is removed.
+
+  The 3 updated runs are:
+
+  - subset_sac_unfrozen_warmup2k_lightreg in seq_training.py (/home/medcvr/Desktop/hamza/
+    multicam-vit/MultiModalViT/mad/seq_training.py#L188)
+      - vit_encoder_lr=3e-6
+      - vit_unfreeze_after_steps=2000
+      - vit_anchor_reg_weight=1.0
+      - vit_subset_alignment_reg_weight=0.5
+  - subset_sac_unfrozen_warmup5k_balanced in seq_training.py (/home/medcvr/Desktop/hamza/
+    multicam-vit/MultiModalViT/mad/seq_training.py#L199)
+      - vit_encoder_lr=3e-6
+      - vit_unfreeze_after_steps=5000
+      - vit_anchor_reg_weight=2.0
+      - vit_subset_alignment_reg_weight=1.0
+  - subset_sac_unfrozen_warmup5k_fasterlr in seq_training.py (/home/medcvr/Desktop/hamza/
+    multicam-vit/MultiModalViT/mad/seq_training.py#L210)
+      - vit_encoder_lr=5e-6
+      - vit_unfreeze_after_steps=5000
+      - vit_anchor_reg_weight=1.0
+      - vit_subset_alignment_reg_weight=0.5
+
+  These are aimed at the failure mode from the last run: the 25k warmup plus heavy
+  regularization preserved the ViT but suppressed policy learning. So the new sweep moves
+  unfreezing much earlier and lightens the regularization while still keeping some
+  protection against encoder drift.
+
+  I also aligned the direct train.py defaults to the balanced setting in config.yaml (/home/
+  medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/config.yaml#L82): 3e-6, 5k, 2.0, 1.0.
+
+  I verified the launcher with py_compile on seq_training.py (/home/medcvr/Desktop/hamza/
+  multicam-vit/MultiModalViT/mad/seq_training.py) and a --dry_run --device cpu. The dry run
+  showed exactly those 3 commands.
+
+
+
+
+
+
+  

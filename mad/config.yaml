@@ -1,0 +1,96 @@
+defaults:
+  - _self_
+  - override hydra/launcher: submitit_local
+  - override hydra/job_logging: disabled
+
+# environment
+task: button-press-topdown
+cameras: [first, third1, third2]
+eval_cameras: [[first],[third1],[third2],[first,third1,third2]]
+camera_alias_profile: mad # [auto, mad, vit_joint]
+metaworld_backend: ours # [ours, mad]
+frame_stack: 3
+seed: 1
+img_size: 84 
+
+# ManiSkill3 specific options
+ms_mode: rgb # [rgbd, rgb, depth]
+
+# train settings
+num_train_steps: 500_000 
+batch_size: 32
+device: cuda
+num_seed_steps: 2000 
+
+# replay buffer
+replay_buffer_size: 100_000
+replay_buffer_num_workers: 4
+nstep: 1 
+
+# evaluate train env while training
+eval_every_steps: 10_000
+num_eval_episodes: 20 
+
+# saving videos from evaluation while training
+save_video: false
+save_final_video_once: true 
+video_dir: 'logs/video'
+num_record_eval_episodes: 3 
+
+# snapshot and csv
+save_snapshot: false
+save_csv: true
+
+# wandb
+use_wandb: false
+wandb_project: ??? # TODO: Fill these
+wandb_entity: ??? # TODO: Fill these
+exp_name: default
+wandb_silent: false
+
+# agent
+agent: mad
+lr: 5e-4
+feature_dim: 50
+state_shape: ??? # to be specified later
+obs_shape: ??? # to be specified later
+action_shape: ??? # to be specified later
+discount: ??? # to be specified later
+critic_target_tau: 0.01
+update_every_steps: 2
+num_expl_steps: 2000 
+hidden_dim: 1024
+init_temperature: 0.1
+log_std_bounds: [-10,2]
+
+# mad params
+mad_alpha: 0.8
+
+# frozen ViT latent RL params
+vit_checkpoint: seq_runs2/joint_distill_mse_w1p25_20260404_233618/vtmae_joint_distill_mse_w1p25_50000.pt
+vit_patch_size: 6
+vit_dim: 256
+vit_depth: 4
+vit_heads: 4
+vit_mlp_dim: 512
+vit_decoder_dim: 256
+vit_decoder_depth: 3
+vit_decoder_heads: 4
+vit_subset_mode: full_and_singles # [full_and_singles, all_nonempty]
+latent_aug_alpha: 0.8
+vit_finetune_encoder: false
+vit_encoder_lr: 3e-6
+vit_unfreeze_after_steps: 5_000
+vit_anchor_reg_weight: 2.0
+vit_subset_alignment_reg_weight: 1.0
+
+# agent instantiation
+agent_target:
+  _target_: algos.${agent}.AGENT
+
+
+# hydra
+hydra:
+  run:
+    dir: .
+  output_subdir: null

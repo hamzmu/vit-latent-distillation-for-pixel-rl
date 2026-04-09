@@ -1,0 +1,252 @@
+
+=== subset_sac_unfrozen (vit_latent_subset_sac) ===
+Command:
+/home/medcvr/miniconda3/envs/vsmae/bin/python3.10 /home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/train.py agent=vit_latent_subset_sac task=button-press-topdown 'cameras=[first,third1,third2]' 'eval_cameras=[[first],[third1],[third2],[first,third1,third2]]' camera_alias_profile=mad metaworld_backend=ours num_train_steps=100000 seed=1 device=cuda batch_size=256 eval_every_steps=25000 num_eval_episodes=20 save_snapshot=false save_video=false save_final_video_once=false use_wandb=false vit_finetune_encoder=true vit_encoder_lr=1e-05 vit_checkpoint=seq_runs2/joint_madcams_20260331_092732/vtmae_joint_madcams_50000.pt
+
+/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/train.py:279: UserWarning: 
+The version_base parameter is not specified.
+Please specify a compatability version level, or None.
+Will assume defaults for version 1.1
+  @hydra.main(config_path='.', config_name='config')
+/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/hydra/_internal/hydra.py:119: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/next/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/train.py:279: UserWarning: 
+The version_base parameter is not specified.
+Please specify a compatability version level, or None.
+Will assume defaults for version 1.1
+  @hydra.main(config_path='.', config_name='config')
+Task: button-press-topdown -> button-press-topdown
+Meta-World backend: ours
+Camera alias profile: mad
+Train cameras: ['first', 'third1', 'third2'] -> ['gripperPOV', 'corner2', 'corner3']
+Eval cameras: [['first'], ['third1'], ['third2'], ['first', 'third1', 'third2']] -> [['gripperPOV'], ['corner2'], ['corner3'], ['gripperPOV', 'corner2', 'corner3']]
+ViT checkpoint: seq_runs2/joint_madcams_20260331_092732/vtmae_joint_madcams_50000.pt
+ViT finetune encoder: True (lr=1e-05)
+Checking memory requirement:  17.75 GB
+VT-MAE: Multi-view ViT patch tokeniser (3-view dynamic masking)
+------------------------------------------
+  Task:            button-press-topdown
+  Algorithm:       vit_latent_subset_sac
+  Experiment:      default
+  Seed:            1
+  Train steps:     100,000
+  Observations:    3x9x84x84
+  Actions:         4
+  Use_wandb:       False
+------------------------------------------
+Wandb disabled.
+
+  0%|          | 0/20 [00:00<?, ?it/s]
+  5%|▌         | 1/20 [00:00<00:15,  1.26it/s]
+ 10%|█         | 2/20 [00:01<00:13,  1.33it/s]
+ 15%|█▌        | 3/20 [00:02<00:12,  1.35it/s]
+ 20%|██        | 4/20 [00:02<00:11,  1.36it/s]
+ 25%|██▌       | 5/20 [00:03<00:10,  1.37it/s]
+ 30%|███       | 6/20 [00:04<00:10,  1.37it/s]
+ 35%|███▌      | 7/20 [00:05<00:09,  1.37it/s]
+ 40%|████      | 8/20 [00:05<00:08,  1.38it/s]
+ 45%|████▌     | 9/20 [00:06<00:07,  1.38it/s]
+ 50%|█████     | 10/20 [00:07<00:07,  1.38it/s]
+ 55%|█████▌    | 11/20 [00:08<00:06,  1.38it/s]
+ 60%|██████    | 12/20 [00:08<00:05,  1.38it/s]
+ 65%|██████▌   | 13/20 [00:09<00:05,  1.38it/s]
+ 70%|███████   | 14/20 [00:10<00:04,  1.37it/s]
+ 75%|███████▌  | 15/20 [00:10<00:03,  1.38it/s]
+ 80%|████████  | 16/20 [00:11<00:02,  1.38it/s]
+ 85%|████████▌ | 17/20 [00:12<00:02,  1.38it/s]
+ 90%|█████████ | 18/20 [00:13<00:01,  1.38it/s]
+ 95%|█████████▌| 19/20 [00:13<00:00,  1.38it/s]
+100%|██████████| 20/20 [00:14<00:00,  1.39it/s]
+                                               
+
+  0%|          | 0/20 [00:00<?, ?it/s]
+  5%|▌         | 1/20 [00:00<00:13,  1.37it/s]
+ 10%|█         | 2/20 [00:01<00:13,  1.38it/s]
+ 15%|█▌        | 3/20 [00:02<00:12,  1.38it/s]
+ 20%|██        | 4/20 [00:02<00:11,  1.38it/s]
+ 25%|██▌       | 5/20 [00:03<00:10,  1.38it/s]
+ 30%|███       | 6/20 [00:04<00:10,  1.38it/s]
+ 35%|███▌      | 7/20 [00:05<00:09,  1.38it/s]
+ 40%|████      | 8/20 [00:05<00:08,  1.38it/s]
+ 45%|████▌     | 9/20 [00:06<00:07,  1.38it/s]
+ 50%|█████     | 10/20 [00:07<00:07,  1.37it/s]
+ 55%|█████▌    | 11/20 [00:07<00:06,  1.37it/s]
+ 60%|██████    | 12/20 [00:08<00:05,  1.37it/s]
+ 65%|██████▌   | 13/20 [00:09<00:05,  1.37it/s]
+ 70%|███████   | 14/20 [00:10<00:04,  1.37it/s]
+ 75%|███████▌  | 15/20 [00:10<00:03,  1.37it/s]
+ 80%|████████  | 16/20 [00:11<00:02,  1.37it/s]
+ 85%|████████▌ | 17/20 [00:12<00:02,  1.37it/s]
+ 90%|█████████ | 18/20 [00:13<00:01,  1.37it/s]
+ 95%|█████████▌| 19/20 [00:13<00:00,  1.37it/s]
+100%|██████████| 20/20 [00:14<00:00,  1.38it/s]
+                                               
+
+  0%|          | 0/20 [00:00<?, ?it/s]
+  5%|▌         | 1/20 [00:00<00:13,  1.38it/s]
+ 10%|█         | 2/20 [00:01<00:13,  1.37it/s]
+ 15%|█▌        | 3/20 [00:02<00:12,  1.37it/s]
+ 20%|██        | 4/20 [00:02<00:11,  1.37it/s]
+ 25%|██▌       | 5/20 [00:03<00:10,  1.37it/s]
+ 30%|███       | 6/20 [00:04<00:10,  1.37it/s]
+ 35%|███▌      | 7/20 [00:05<00:09,  1.37it/s]
+ 40%|████      | 8/20 [00:05<00:08,  1.37it/s]
+ 45%|████▌     | 9/20 [00:06<00:08,  1.37it/s]
+ 50%|█████     | 10/20 [00:07<00:07,  1.37it/s]
+ 55%|█████▌    | 11/20 [00:08<00:06,  1.37it/s]
+ 60%|██████    | 12/20 [00:08<00:05,  1.37it/s]
+ 65%|██████▌   | 13/20 [00:09<00:05,  1.37it/s]
+ 70%|███████   | 14/20 [00:10<00:04,  1.37it/s]
+ 75%|███████▌  | 15/20 [00:10<00:03,  1.37it/s]
+ 80%|████████  | 16/20 [00:11<00:02,  1.37it/s]
+ 85%|████████▌ | 17/20 [00:12<00:02,  1.37it/s]
+ 90%|█████████ | 18/20 [00:13<00:01,  1.37it/s]
+ 95%|█████████▌| 19/20 [00:13<00:00,  1.37it/s]
+100%|██████████| 20/20 [00:14<00:00,  1.37it/s]
+                                               
+
+  0%|          | 0/20 [00:00<?, ?it/s]
+  5%|▌         | 1/20 [00:00<00:15,  1.20it/s]
+ 10%|█         | 2/20 [00:01<00:15,  1.20it/s]
+ 15%|█▌        | 3/20 [00:02<00:14,  1.20it/s]
+ 20%|██        | 4/20 [00:03<00:13,  1.20it/s]
+ 25%|██▌       | 5/20 [00:04<00:12,  1.20it/s]
+ 30%|███       | 6/20 [00:05<00:11,  1.20it/s]
+ 35%|███▌      | 7/20 [00:05<00:10,  1.19it/s]
+ 40%|████      | 8/20 [00:06<00:10,  1.19it/s]
+ 45%|████▌     | 9/20 [00:07<00:09,  1.19it/s]
+ 50%|█████     | 10/20 [00:08<00:08,  1.19it/s]
+ 55%|█████▌    | 11/20 [00:09<00:07,  1.19it/s]
+ 60%|██████    | 12/20 [00:10<00:06,  1.19it/s]
+ 65%|██████▌   | 13/20 [00:10<00:05,  1.19it/s]
+ 70%|███████   | 14/20 [00:11<00:05,  1.19it/s]
+ 75%|███████▌  | 15/20 [00:12<00:04,  1.19it/s]
+ 80%|████████  | 16/20 [00:13<00:03,  1.19it/s]
+ 85%|████████▌ | 17/20 [00:14<00:02,  1.19it/s]
+ 90%|█████████ | 18/20 [00:15<00:01,  1.19it/s]
+ 95%|█████████▌| 19/20 [00:15<00:00,  1.19it/s]
+100%|██████████| 20/20 [00:16<00:00,  1.19it/s]
+                                               
+ eval             S: 0                     E: 0                     R: 0.00                  L: 250                   T: 0:01:02               SPS: 289.79              SR: 0.00              
+ train            S: 250                   E: 1                     R: 144.83                L: 250                   T: 0:01:04               SPS: 156.97           
+ train            S: 500                   E: 2                     R: 184.11                L: 250                   T: 0:01:05               SPS: 151.70           
+ train            S: 750                   E: 3                     R: 217.09                L: 250                   T: 0:01:07               SPS: 156.59           
+ train            S: 1,000                 E: 4                     R: 224.68                L: 250                   T: 0:01:08               SPS: 154.36           
+ train            S: 1,250                 E: 5                     R: 284.27                L: 250                   T: 0:01:10               SPS: 158.51           
+ train            S: 1,500                 E: 6                     R: 305.28                L: 250                   T: 0:01:12               SPS: 155.04           
+ train            S: 1,750                 E: 7                     R: 348.61                L: 250                   T: 0:01:13               SPS: 156.52           
+ train            S: 2,000                 E: 8                     R: 240.54                L: 250                   T: 0:01:15               SPS: 153.21           
+Error executing job with overrides: ['agent=vit_latent_subset_sac', 'task=button-press-topdown', 'cameras=[first,third1,third2]', 'eval_cameras=[[first],[third1],[third2],[first,third1,third2]]', 'camera_alias_profile=mad', 'metaworld_backend=ours', 'num_train_steps=100000', 'seed=1', 'device=cuda', 'batch_size=256', 'eval_every_steps=25000', 'num_eval_episodes=20', 'save_snapshot=false', 'save_video=false', 'save_final_video_once=false', 'use_wandb=false', 'vit_finetune_encoder=true', 'vit_encoder_lr=1e-05', 'vit_checkpoint=seq_runs2/joint_madcams_20260331_092732/vtmae_joint_madcams_50000.pt']
+Traceback (most recent call last):
+  File "/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/train.py", line 290, in main
+    workspace.train()
+  File "/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/train.py", line 234, in train
+    agent_metrics.update(self.agent.update(self.replay_iter, self.global_step))
+  File "/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/algos/vit_latent_subset_sac.py", line 143, in update
+    z_full, z_subsets = self._encode_training_latents(obs, grad=True)
+  File "/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/algos/vit_latent_subset_sac.py", line 30, in _encode_training_latents
+    z_subsets = [self.encoder.encode_named_subset(obs, subset, grad=grad) for subset in self.augmented_subsets]
+  File "/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/algos/vit_latent_subset_sac.py", line 30, in <listcomp>
+    z_subsets = [self.encoder.encode_named_subset(obs, subset, grad=grad) for subset in self.augmented_subsets]
+  File "/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/mad/algos/vit_latent_common.py", line 192, in encode_named_subset
+    return self.mae.get_embeddings(full_obs_scattered, visible_views=visible, eval=not grad)
+  File "/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/pretrain_models.py", line 509, in get_embeddings
+    encoded_full, keep_indices = self._encode_with_variable_keep(tokens, keep_mask)
+  File "/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/pretrain_models.py", line 306, in _encode_with_variable_keep
+    batch_encoded = self.encoder.transformer(batch_tokens)
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/vit_pytorch/vit.py", line 78, in forward
+    x = attn(x) + x
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1511, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1520, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/vit_pytorch/vit.py", line 56, in forward
+    dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 50.00 MiB. GPU 0 has a total capacity of 23.50 GiB of which 80.94 MiB is free. Including non-PyTorch memory, this process has 23.06 GiB memory in use. Of the allocated memory 22.06 GiB is allocated by PyTorch, and 235.13 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.
+Exception ignored in: <function Renderer.__del__ at 0x7e628461f0a0>
+Traceback (most recent call last):
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/renderer.py", line 330, in __del__
+    self.close()
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/renderer.py", line 316, in close
+    self._gl_context.free()
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/egl/__init__.py", line 126, in free
+    EGL.eglDestroyContext(EGL_DISPLAY, self._context)
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/OpenGL/error.py", line 230, in glCheckError
+    raise self._errorClass(
+OpenGL.raw.EGL._errors.EGLError: EGLError(
+	err = EGL_NOT_INITIALIZED,
+	baseOperation = eglDestroyContext,
+	cArguments = (
+		<OpenGL._opaque.EGLDisplay_pointer object at 0x7e62845aa540>,
+		<OpenGL._opaque.EGLContext_pointer object at 0x7e624045fec0>,
+	),
+	result = 0
+)
+Exception ignored in: <function GLContext.__del__ at 0x7e628461e710>
+Traceback (most recent call last):
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/egl/__init__.py", line 131, in __del__
+    self.free()
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/egl/__init__.py", line 126, in free
+    EGL.eglDestroyContext(EGL_DISPLAY, self._context)
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/OpenGL/error.py", line 230, in glCheckError
+    raise self._errorClass(
+OpenGL.raw.EGL._errors.EGLError: EGLError(
+	err = EGL_NOT_INITIALIZED,
+	baseOperation = eglDestroyContext,
+	cArguments = (
+		<OpenGL._opaque.EGLDisplay_pointer object at 0x7e62845aa540>,
+		<OpenGL._opaque.EGLContext_pointer object at 0x7e624045fec0>,
+	),
+	result = 0
+)
+Exception ignored in: <function Renderer.__del__ at 0x7e628461f0a0>
+Traceback (most recent call last):
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/renderer.py", line 330, in __del__
+    self.close()
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/renderer.py", line 316, in close
+    self._gl_context.free()
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/egl/__init__.py", line 124, in free
+    EGL.eglMakeCurrent(EGL_DISPLAY, EGL.EGL_NO_SURFACE,
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/OpenGL/error.py", line 230, in glCheckError
+    raise self._errorClass(
+OpenGL.raw.EGL._errors.EGLError: EGLError(
+	err = EGL_NOT_INITIALIZED,
+	baseOperation = eglMakeCurrent,
+	cArguments = (
+		<OpenGL._opaque.EGLDisplay_pointer object at 0x7e62845aa540>,
+		<OpenGL._opaque.EGLSurface_pointer object at 0x7e62845a86c0>,
+		<OpenGL._opaque.EGLSurface_pointer object at 0x7e62845a86c0>,
+		<OpenGL._opaque.EGLContext_pointer object at 0x7e62845a8dc0>,
+	),
+	result = 0
+)
+Exception ignored in: <function GLContext.__del__ at 0x7e628461e710>
+Traceback (most recent call last):
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/egl/__init__.py", line 131, in __del__
+    self.free()
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/mujoco/egl/__init__.py", line 124, in free
+    EGL.eglMakeCurrent(EGL_DISPLAY, EGL.EGL_NO_SURFACE,
+  File "/home/medcvr/miniconda3/envs/vsmae/lib/python3.10/site-packages/OpenGL/error.py", line 230, in glCheckError
+    raise self._errorClass(
+OpenGL.raw.EGL._errors.EGLError: EGLError(
+	err = EGL_NOT_INITIALIZED,
+	baseOperation = eglMakeCurrent,
+	cArguments = (
+		<OpenGL._opaque.EGLDisplay_pointer object at 0x7e62845aa540>,
+		<OpenGL._opaque.EGLSurface_pointer object at 0x7e62845a86c0>,
+		<OpenGL._opaque.EGLSurface_pointer object at 0x7e62845a86c0>,
+		<OpenGL._opaque.EGLContext_pointer object at 0x7e62845a8dc0>,
+	),
+	result = 0
+)
+
+Exit code: 1
