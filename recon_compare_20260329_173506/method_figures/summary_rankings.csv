@@ -1,0 +1,5 @@
+subset,best_total_method,best_total,best_cos_method,best_cos,best_mse_method,best_mse
+keep_cam0_cam1_cam2,joint,0.0,joint,1.0,joint,0.0
+keep_cam0,curriculum,0.002744,joint,0.999969,joint,4.6e-05
+keep_cam1,joint,0.001105,joint,0.999952,joint,7.1e-05
+keep_cam2,joint,0.002052,joint,0.999976,joint,3.6e-05

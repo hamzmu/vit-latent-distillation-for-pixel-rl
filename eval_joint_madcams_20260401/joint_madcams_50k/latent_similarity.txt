@@ -1,0 +1,6 @@
+keep_cam0_cam1_cam2__vs__keep_cam0: cosine=0.999715 mse=0.000409
+keep_cam0_cam1_cam2__vs__keep_cam1: cosine=0.999619 mse=0.000548
+keep_cam0_cam1_cam2__vs__keep_cam2: cosine=0.999828 mse=0.000248
+keep_cam0__vs__keep_cam1: cosine=0.998838 mse=0.001672
+keep_cam0__vs__keep_cam2: cosine=0.999385 mse=0.000884
+keep_cam1__vs__keep_cam2: cosine=0.999448 mse=0.000794

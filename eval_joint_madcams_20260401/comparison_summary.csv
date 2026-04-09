@@ -1,0 +1,5 @@
+subset,method,total,v0,v1,v2,z_cos_to_full,z_mse_to_full,checkpoint
+keep_cam0_cam1_cam2,joint_madcams_50k,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_madcams_20260331_092732/vtmae_joint_madcams_50000.pt
+keep_cam0,joint_madcams_50k,0.002922,0.000000,0.002056,0.003788,0.999715,0.000409,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_madcams_20260331_092732/vtmae_joint_madcams_50000.pt
+keep_cam1,joint_madcams_50k,0.004064,0.002637,0.000000,0.005491,0.999619,0.000548,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_madcams_20260331_092732/vtmae_joint_madcams_50000.pt
+keep_cam2,joint_madcams_50k,0.003016,0.002253,0.003779,0.000000,0.999827,0.000248,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_madcams_20260331_092732/vtmae_joint_madcams_50000.pt

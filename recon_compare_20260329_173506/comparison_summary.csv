@@ -1,0 +1,13 @@
+subset,method,total,v0,v1,v2,z_cos_to_full,z_mse_to_full,checkpoint
+keep_cam0_cam1_cam2,joint,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,seq_runs/joint_20260329_173506/vtmae_joint_distill_50000.pt
+keep_cam0_cam1_cam2,distill,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,seq_runs/distill_20260329_173506/vtmae_distill_50000.pt
+keep_cam0_cam1_cam2,curriculum,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,seq_runs/curriculum_20260329_173506/vtmae_curriculum_50000.pt
+keep_cam0,curriculum,0.002744,0.000000,0.004065,0.001423,0.999889,0.000734,seq_runs/curriculum_20260329_173506/vtmae_curriculum_50000.pt
+keep_cam0,joint,0.002981,0.000000,0.003989,0.001973,0.999969,0.000046,seq_runs/joint_20260329_173506/vtmae_joint_distill_50000.pt
+keep_cam0,distill,0.004854,0.000000,0.005457,0.004251,0.972703,0.045016,seq_runs/distill_20260329_173506/vtmae_distill_50000.pt
+keep_cam1,joint,0.001105,0.001279,0.000000,0.000931,0.999952,0.000071,seq_runs/joint_20260329_173506/vtmae_joint_distill_50000.pt
+keep_cam1,curriculum,0.001718,0.001750,0.000000,0.001686,0.999893,0.000680,seq_runs/curriculum_20260329_173506/vtmae_curriculum_50000.pt
+keep_cam1,distill,0.005722,0.003225,0.000000,0.008220,0.973093,0.044518,seq_runs/distill_20260329_173506/vtmae_distill_50000.pt
+keep_cam2,joint,0.002052,0.001860,0.002245,0.000000,0.999976,0.000036,seq_runs/joint_20260329_173506/vtmae_joint_distill_50000.pt
+keep_cam2,curriculum,0.002306,0.001399,0.003214,0.000000,0.999838,0.000748,seq_runs/curriculum_20260329_173506/vtmae_curriculum_50000.pt
+keep_cam2,distill,0.008556,0.005180,0.011932,0.000000,0.969135,0.051032,seq_runs/distill_20260329_173506/vtmae_distill_50000.pt

@@ -1,0 +1,4 @@
+keep_cam0_cam1_cam2: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000 grid=keep_cam0_cam1_cam2_orig_vs_recon.png
+keep_cam0: total=0.004092 v0=0.000000 v1=0.002774 v2=0.005410 z_cos_to_full=0.999792 z_mse_to_full=0.000211 grid=keep_cam0_orig_vs_recon.png
+keep_cam1: total=0.004011 v0=0.001722 v1=0.000000 v2=0.006299 z_cos_to_full=0.999963 z_mse_to_full=0.000037 grid=keep_cam1_orig_vs_recon.png
+keep_cam2: total=0.003561 v0=0.002088 v1=0.005034 v2=0.000000 z_cos_to_full=0.999825 z_mse_to_full=0.000177 grid=keep_cam2_orig_vs_recon.png

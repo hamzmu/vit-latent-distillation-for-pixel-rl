@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import random
-from typing import List, Optional
+from typing import List, Optional, Sequence
 
 import dm_env
 import mujoco
@@ -191,11 +191,13 @@ def make_metaworld(
     action_repeat: int = 1,
     discount: float = 1.0,
     seed: int = 0,
+    proprio: bool = True,
     camera_name: str | None = None,
     camera_aux_name: str | None = None,
+    camera_names: Sequence[str | int] | None = None,
     add_aux_pixels_to_obs: bool = True,
 ):
-    env = MT_Wrapper(name, discount=discount, seed=seed, proprio=True)
+    env = MT_Wrapper(name, discount=discount, seed=seed, proprio=proprio)
     env.reset()
 
     env = ActionDTypeWrapper(env, np.float32)
@@ -204,28 +206,30 @@ def make_metaworld(
 
     frame_keys: List[str] = []
 
-    # main camera
-    rgb_key = "pixels"
-    cam_kwargs_main = {"camera_name": camera_name if camera_name is not None else 0}
-    env = pixels.Wrapper(
-        env,
-        pixels_only=False,
-        render_kwargs=dict(height=84, width=84, **cam_kwargs_main),
-        observation_key=rgb_key,
-    )
-    frame_keys.append(rgb_key)
+    def _pixel_obs_key(view_idx: int) -> str:
+        if view_idx == 0:
+            return "pixels"
+        if view_idx == 1:
+            return "pixels_aux"
+        return f"pixels_aux{view_idx}"
 
-    # aux camera
-    if add_aux_pixels_to_obs:
-        aux_key = "pixels_aux"
-        cam_kwargs_aux = {"camera_name": camera_aux_name if camera_aux_name is not None else 0}
+    if camera_names is None:
+        resolved_camera_names: List[str | int] = [camera_name if camera_name is not None else 0]
+        if add_aux_pixels_to_obs:
+            resolved_camera_names.append(camera_aux_name if camera_aux_name is not None else 0)
+    else:
+        resolved_camera_names = list(camera_names)
+        assert len(resolved_camera_names) >= 1, "camera_names must contain at least one camera."
+
+    for view_idx, cam_name in enumerate(resolved_camera_names):
+        obs_key = _pixel_obs_key(view_idx)
         env = pixels.Wrapper(
             env,
             pixels_only=False,
-            render_kwargs=dict(height=84, width=84, **cam_kwargs_aux),
-            observation_key=aux_key,
+            render_kwargs=dict(height=84, width=84, camera_name=cam_name),
+            observation_key=obs_key,
         )
-        frame_keys.append(aux_key)
+        frame_keys.append(obs_key)
 
     env = FlipPixelsWrapper(env, keys=tuple(frame_keys))
     env = FrameStackWrapper(env, frame_stack, frame_keys)

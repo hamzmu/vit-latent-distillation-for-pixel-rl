@@ -1,0 +1,31 @@
+[keep_cam0_cam1_cam2]
+regular_joint: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+prev_single_recon_w1p5: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+prev_distill_mse: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+new_cosine_w1p25: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+new_mse_w1p25: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+new_mse_w1p5: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+
+[keep_cam0]
+regular_joint: total=0.002904 v0=0.000000 v1=0.002039 v2=0.003768 z_cos_to_full=0.999721 z_mse_to_full=0.000401
+new_cosine_w1p25: total=0.003151 v0=0.000000 v1=0.002729 v2=0.003573 z_cos_to_full=0.999922 z_mse_to_full=0.000106
+prev_single_recon_w1p5: total=0.003225 v0=0.000000 v1=0.001750 v2=0.004700 z_cos_to_full=0.999940 z_mse_to_full=0.000085
+prev_distill_mse: total=0.003417 v0=0.000000 v1=0.002122 v2=0.004712 z_cos_to_full=0.999317 z_mse_to_full=0.000529
+new_mse_w1p25: total=0.003675 v0=0.000000 v1=0.002022 v2=0.005327 z_cos_to_full=0.999942 z_mse_to_full=0.000068
+new_mse_w1p5: total=0.004092 v0=0.000000 v1=0.002774 v2=0.005410 z_cos_to_full=0.999792 z_mse_to_full=0.000211
+
+[keep_cam1]
+new_cosine_w1p25: total=0.001425 v0=0.001676 v1=0.000000 v2=0.001174 z_cos_to_full=0.999965 z_mse_to_full=0.000048
+prev_single_recon_w1p5: total=0.001941 v0=0.001830 v1=0.000000 v2=0.002053 z_cos_to_full=0.999906 z_mse_to_full=0.000134
+new_mse_w1p25: total=0.001981 v0=0.002073 v1=0.000000 v2=0.001889 z_cos_to_full=0.999983 z_mse_to_full=0.000020
+prev_distill_mse: total=0.002183 v0=0.001695 v1=0.000000 v2=0.002670 z_cos_to_full=0.999953 z_mse_to_full=0.000036
+regular_joint: total=0.003987 v0=0.002794 v1=0.000000 v2=0.005179 z_cos_to_full=0.999639 z_mse_to_full=0.000519
+new_mse_w1p5: total=0.004011 v0=0.001722 v1=0.000000 v2=0.006299 z_cos_to_full=0.999963 z_mse_to_full=0.000037
+
+[keep_cam2]
+new_cosine_w1p25: total=0.001776 v0=0.001282 v1=0.002271 v2=0.000000 z_cos_to_full=0.999969 z_mse_to_full=0.000042
+new_mse_w1p25: total=0.002395 v0=0.001890 v1=0.002901 v2=0.000000 z_cos_to_full=0.999958 z_mse_to_full=0.000049
+prev_distill_mse: total=0.002511 v0=0.002172 v1=0.002851 v2=0.000000 z_cos_to_full=0.999978 z_mse_to_full=0.000017
+regular_joint: total=0.003242 v0=0.002537 v1=0.003947 v2=0.000000 z_cos_to_full=0.999826 z_mse_to_full=0.000250
+new_mse_w1p5: total=0.003561 v0=0.002088 v1=0.005034 v2=0.000000 z_cos_to_full=0.999825 z_mse_to_full=0.000177
+prev_single_recon_w1p5: total=0.003682 v0=0.001828 v1=0.005537 v2=0.000000 z_cos_to_full=0.999932 z_mse_to_full=0.000096

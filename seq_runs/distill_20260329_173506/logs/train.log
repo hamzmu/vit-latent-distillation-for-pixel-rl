@@ -1,0 +1,516 @@
+
+=== distill ===
+Command:
+/home/medcvr/miniconda3/envs/vsmae/bin/python3.10 /home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/pretrain_vtmae_distill.py --camera_names gripperPOV corner corner2 --frame_stack 3 --action_repeat 2 --patch_size 6 --batch_size 32 --log_every 100 --save_every 1000 --vis_every 10000 --stage1_steps 25000 --stage2_steps 25000 --stage1_out /home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs/distill_20260329_173506/vtmae_distill_50000_stage1_teacher.pt --out /home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs/distill_20260329_173506/vtmae_distill_50000.pt --stage1_preview_dir /home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs/distill_20260329_173506/stage1_previews --stage2_preview_dir /home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs/distill_20260329_173506/stage2_previews
+[DISTILL-3CAM] channels=9, views=3, size=(84,84)
+[DISTILL-3CAM] cameras=['gripperPOV', 'corner', 'corner2']
+[DISTILL-3CAM] stage1_steps=25000 stage2_steps=25000 teacher_checkpoint=None freeze_stage2_decoder=1
+VT-MAE: Multi-view ViT patch tokeniser (3-view dynamic masking)
+[Stage1] parent total=4,860,244 trainable=4,860,244
+[Stage1 100/25000] total=0.0287 ema=0.2334 v0=0.0221 v1=0.0205 v2=0.0435
+[Stage1 200/25000] total=0.0189 ema=0.1000 v0=0.0154 v1=0.0187 v2=0.0226
+[Stage1 300/25000] total=0.0162 ema=0.0471 v0=0.0149 v1=0.0171 v2=0.0167
+[Stage1 400/25000] total=0.0146 ema=0.0267 v0=0.0148 v1=0.0145 v2=0.0146
+[Stage1 500/25000] total=0.0128 ema=0.0181 v0=0.0120 v1=0.0124 v2=0.0140
+[Stage1 600/25000] total=0.0122 ema=0.0145 v0=0.0108 v1=0.0124 v2=0.0133
+[Stage1 700/25000] total=0.0110 ema=0.0128 v0=0.0097 v1=0.0115 v2=0.0118
+[Stage1 800/25000] total=0.0095 ema=0.0117 v0=0.0072 v1=0.0107 v2=0.0107
+[Stage1 900/25000] total=0.0102 ema=0.0107 v0=0.0100 v1=0.0104 v2=0.0102
+[Stage1 1000/25000] total=0.0089 ema=0.0100 v0=0.0081 v1=0.0105 v2=0.0080
+[Stage1 1100/25000] total=0.0076 ema=0.0089 v0=0.0076 v1=0.0089 v2=0.0064
+[Stage1 1200/25000] total=0.0070 ema=0.0080 v0=0.0062 v1=0.0086 v2=0.0063
+[Stage1 1300/25000] total=0.0060 ema=0.0072 v0=0.0051 v1=0.0078 v2=0.0050
+[Stage1 1400/25000] total=0.0056 ema=0.0066 v0=0.0042 v1=0.0068 v2=0.0056
+[Stage1 1500/25000] total=0.0051 ema=0.0059 v0=0.0047 v1=0.0060 v2=0.0045
+[Stage1 1600/25000] total=0.0042 ema=0.0054 v0=0.0038 v1=0.0047 v2=0.0040
+[Stage1 1700/25000] total=0.0043 ema=0.0050 v0=0.0050 v1=0.0046 v2=0.0034
+[Stage1 1800/25000] total=0.0049 ema=0.0050 v0=0.0055 v1=0.0059 v2=0.0034
+[Stage1 1900/25000] total=0.0041 ema=0.0046 v0=0.0043 v1=0.0049 v2=0.0032
+[Stage1 2000/25000] total=0.0035 ema=0.0043 v0=0.0042 v1=0.0036 v2=0.0026
+[Stage1 2100/25000] total=0.0047 ema=0.0042 v0=0.0051 v1=0.0051 v2=0.0038
+[Stage1 2200/25000] total=0.0045 ema=0.0041 v0=0.0057 v1=0.0043 v2=0.0036
+[Stage1 2300/25000] total=0.0035 ema=0.0039 v0=0.0045 v1=0.0034 v2=0.0027
+[Stage1 2400/25000] total=0.0041 ema=0.0038 v0=0.0050 v1=0.0039 v2=0.0033
+[Stage1 2500/25000] total=0.0036 ema=0.0037 v0=0.0034 v1=0.0040 v2=0.0034
+[Stage1 2600/25000] total=0.0036 ema=0.0037 v0=0.0044 v1=0.0038 v2=0.0026
+[Stage1 2700/25000] total=0.0034 ema=0.0036 v0=0.0046 v1=0.0032 v2=0.0023
+[Stage1 2800/25000] total=0.0029 ema=0.0035 v0=0.0034 v1=0.0032 v2=0.0020
+[Stage1 2900/25000] total=0.0032 ema=0.0036 v0=0.0036 v1=0.0034 v2=0.0024
+[Stage1 3000/25000] total=0.0034 ema=0.0035 v0=0.0040 v1=0.0035 v2=0.0027
+[Stage1 3100/25000] total=0.0045 ema=0.0035 v0=0.0038 v1=0.0058 v2=0.0039
+[Stage1 3200/25000] total=0.0029 ema=0.0034 v0=0.0039 v1=0.0028 v2=0.0021
+[Stage1 3300/25000] total=0.0032 ema=0.0034 v0=0.0031 v1=0.0041 v2=0.0024
+[Stage1 3400/25000] total=0.0031 ema=0.0033 v0=0.0033 v1=0.0036 v2=0.0026
+[Stage1 3500/25000] total=0.0034 ema=0.0033 v0=0.0033 v1=0.0036 v2=0.0033
+[Stage1 3600/25000] total=0.0028 ema=0.0033 v0=0.0027 v1=0.0031 v2=0.0026
+[Stage1 3700/25000] total=0.0042 ema=0.0034 v0=0.0058 v1=0.0039 v2=0.0027
+[Stage1 3800/25000] total=0.0028 ema=0.0032 v0=0.0029 v1=0.0036 v2=0.0020
+[Stage1 3900/25000] total=0.0054 ema=0.0032 v0=0.0088 v1=0.0040 v2=0.0033
+[Stage1 4000/25000] total=0.0032 ema=0.0032 v0=0.0036 v1=0.0036 v2=0.0023
+[Stage1 4100/25000] total=0.0029 ema=0.0032 v0=0.0038 v1=0.0028 v2=0.0019
+[Stage1 4200/25000] total=0.0031 ema=0.0032 v0=0.0050 v1=0.0028 v2=0.0017
+[Stage1 4300/25000] total=0.0038 ema=0.0032 v0=0.0050 v1=0.0033 v2=0.0030
+[Stage1 4400/25000] total=0.0027 ema=0.0031 v0=0.0041 v1=0.0023 v2=0.0017
+[Stage1 4500/25000] total=0.0024 ema=0.0031 v0=0.0025 v1=0.0028 v2=0.0018
+[Stage1 4600/25000] total=0.0028 ema=0.0031 v0=0.0031 v1=0.0028 v2=0.0024
+[Stage1 4700/25000] total=0.0025 ema=0.0030 v0=0.0031 v1=0.0027 v2=0.0018
+[Stage1 4800/25000] total=0.0047 ema=0.0033 v0=0.0035 v1=0.0045 v2=0.0062
+[Stage1 4900/25000] total=0.0030 ema=0.0032 v0=0.0032 v1=0.0031 v2=0.0027
+[Stage1 5000/25000] total=0.0045 ema=0.0031 v0=0.0075 v1=0.0031 v2=0.0029
+[Stage1 5100/25000] total=0.0026 ema=0.0032 v0=0.0027 v1=0.0030 v2=0.0021
+[Stage1 5200/25000] total=0.0021 ema=0.0029 v0=0.0022 v1=0.0022 v2=0.0018
+[Stage1 5300/25000] total=0.0037 ema=0.0028 v0=0.0029 v1=0.0051 v2=0.0032
+[Stage1 5400/25000] total=0.0026 ema=0.0028 v0=0.0033 v1=0.0026 v2=0.0018
+[Stage1 5500/25000] total=0.0029 ema=0.0028 v0=0.0038 v1=0.0032 v2=0.0017
+[Stage1 5600/25000] total=0.0030 ema=0.0028 v0=0.0041 v1=0.0025 v2=0.0023
+[Stage1 5700/25000] total=0.0025 ema=0.0028 v0=0.0026 v1=0.0032 v2=0.0018
+[Stage1 5800/25000] total=0.0020 ema=0.0028 v0=0.0023 v1=0.0023 v2=0.0015
+[Stage1 5900/25000] total=0.0023 ema=0.0028 v0=0.0022 v1=0.0025 v2=0.0020
+[Stage1 6000/25000] total=0.0024 ema=0.0026 v0=0.0027 v1=0.0027 v2=0.0019
+[Stage1 6100/25000] total=0.0031 ema=0.0027 v0=0.0025 v1=0.0043 v2=0.0025
+[Stage1 6200/25000] total=0.0026 ema=0.0026 v0=0.0028 v1=0.0033 v2=0.0017
+[Stage1 6300/25000] total=0.0029 ema=0.0026 v0=0.0040 v1=0.0028 v2=0.0020
+[Stage1 6400/25000] total=0.0020 ema=0.0026 v0=0.0022 v1=0.0024 v2=0.0015
+[Stage1 6500/25000] total=0.0031 ema=0.0026 v0=0.0038 v1=0.0031 v2=0.0025
+[Stage1 6600/25000] total=0.0021 ema=0.0026 v0=0.0024 v1=0.0023 v2=0.0016
+[Stage1 6700/25000] total=0.0023 ema=0.0026 v0=0.0027 v1=0.0025 v2=0.0018
+[Stage1 6800/25000] total=0.0031 ema=0.0026 v0=0.0038 v1=0.0033 v2=0.0022
+[Stage1 6900/25000] total=0.0023 ema=0.0025 v0=0.0024 v1=0.0024 v2=0.0021
+[Stage1 7000/25000] total=0.0023 ema=0.0025 v0=0.0021 v1=0.0029 v2=0.0020
+[Stage1 7100/25000] total=0.0030 ema=0.0025 v0=0.0026 v1=0.0038 v2=0.0026
+[Stage1 7200/25000] total=0.0023 ema=0.0025 v0=0.0022 v1=0.0025 v2=0.0023
+[Stage1 7300/25000] total=0.0044 ema=0.0026 v0=0.0068 v1=0.0030 v2=0.0035
+[Stage1 7400/25000] total=0.0022 ema=0.0025 v0=0.0021 v1=0.0028 v2=0.0016
+[Stage1 7500/25000] total=0.0025 ema=0.0024 v0=0.0031 v1=0.0024 v2=0.0021
+[Stage1 7600/25000] total=0.0020 ema=0.0024 v0=0.0018 v1=0.0025 v2=0.0016
+[Stage1 7700/25000] total=0.0027 ema=0.0025 v0=0.0032 v1=0.0029 v2=0.0021
+[Stage1 7800/25000] total=0.0018 ema=0.0026 v0=0.0015 v1=0.0023 v2=0.0015
+[Stage1 7900/25000] total=0.0022 ema=0.0025 v0=0.0019 v1=0.0030 v2=0.0017
+[Stage1 8000/25000] total=0.0023 ema=0.0024 v0=0.0025 v1=0.0025 v2=0.0020
+[Stage1 8100/25000] total=0.0019 ema=0.0023 v0=0.0015 v1=0.0023 v2=0.0018
+[Stage1 8200/25000] total=0.0025 ema=0.0024 v0=0.0034 v1=0.0023 v2=0.0019
+[Stage1 8300/25000] total=0.0017 ema=0.0023 v0=0.0017 v1=0.0020 v2=0.0013
+[Stage1 8400/25000] total=0.0019 ema=0.0024 v0=0.0022 v1=0.0020 v2=0.0014
+[Stage1 8500/25000] total=0.0032 ema=0.0024 v0=0.0047 v1=0.0029 v2=0.0021
+[Stage1 8600/25000] total=0.0025 ema=0.0024 v0=0.0021 v1=0.0031 v2=0.0023
+[Stage1 8700/25000] total=0.0020 ema=0.0023 v0=0.0028 v1=0.0018 v2=0.0014
+[Stage1 8800/25000] total=0.0017 ema=0.0023 v0=0.0019 v1=0.0018 v2=0.0015
+[Stage1 8900/25000] total=0.0017 ema=0.0023 v0=0.0018 v1=0.0020 v2=0.0014
+[Stage1 9000/25000] total=0.0020 ema=0.0022 v0=0.0017 v1=0.0025 v2=0.0020
+[Stage1 9100/25000] total=0.0023 ema=0.0023 v0=0.0016 v1=0.0027 v2=0.0026
+[Stage1 9200/25000] total=0.0018 ema=0.0022 v0=0.0020 v1=0.0021 v2=0.0013
+[Stage1 9300/25000] total=0.0019 ema=0.0022 v0=0.0019 v1=0.0022 v2=0.0016
+[Stage1 9400/25000] total=0.0025 ema=0.0022 v0=0.0026 v1=0.0025 v2=0.0025
+[Stage1 9500/25000] total=0.0023 ema=0.0023 v0=0.0017 v1=0.0032 v2=0.0019
+[Stage1 9600/25000] total=0.0022 ema=0.0023 v0=0.0026 v1=0.0021 v2=0.0020
+[Stage1 9700/25000] total=0.0015 ema=0.0022 v0=0.0017 v1=0.0015 v2=0.0011
+[Stage1 9800/25000] total=0.0019 ema=0.0022 v0=0.0021 v1=0.0021 v2=0.0016
+[Stage1 9900/25000] total=0.0028 ema=0.0023 v0=0.0036 v1=0.0029 v2=0.0019
+[Stage1 10000/25000] total=0.0028 ema=0.0022 v0=0.0021 v1=0.0036 v2=0.0028
+[Stage1 10100/25000] total=0.0024 ema=0.0022 v0=0.0029 v1=0.0026 v2=0.0017
+[Stage1 10200/25000] total=0.0017 ema=0.0022 v0=0.0016 v1=0.0020 v2=0.0014
+[Stage1 10300/25000] total=0.0019 ema=0.0021 v0=0.0020 v1=0.0024 v2=0.0014
+[Stage1 10400/25000] total=0.0025 ema=0.0021 v0=0.0024 v1=0.0029 v2=0.0022
+[Stage1 10500/25000] total=0.0015 ema=0.0021 v0=0.0015 v1=0.0017 v2=0.0011
+[Stage1 10600/25000] total=0.0017 ema=0.0020 v0=0.0017 v1=0.0021 v2=0.0014
+[Stage1 10700/25000] total=0.0031 ema=0.0021 v0=0.0047 v1=0.0023 v2=0.0022
+[Stage1 10800/25000] total=0.0018 ema=0.0021 v0=0.0019 v1=0.0019 v2=0.0015
+[Stage1 10900/25000] total=0.0024 ema=0.0021 v0=0.0035 v1=0.0020 v2=0.0015
+[Stage1 11000/25000] total=0.0021 ema=0.0020 v0=0.0027 v1=0.0024 v2=0.0012
+[Stage1 11100/25000] total=0.0021 ema=0.0019 v0=0.0026 v1=0.0024 v2=0.0013
+[Stage1 11200/25000] total=0.0015 ema=0.0020 v0=0.0011 v1=0.0021 v2=0.0012
+[Stage1 11300/25000] total=0.0029 ema=0.0019 v0=0.0044 v1=0.0029 v2=0.0015
+[Stage1 11400/25000] total=0.0019 ema=0.0018 v0=0.0024 v1=0.0023 v2=0.0012
+[Stage1 11500/25000] total=0.0022 ema=0.0021 v0=0.0034 v1=0.0019 v2=0.0013
+[Stage1 11600/25000] total=0.0024 ema=0.0020 v0=0.0027 v1=0.0023 v2=0.0021
+[Stage1 11700/25000] total=0.0018 ema=0.0018 v0=0.0023 v1=0.0019 v2=0.0012
+[Stage1 11800/25000] total=0.0013 ema=0.0017 v0=0.0014 v1=0.0016 v2=0.0010
+[Stage1 11900/25000] total=0.0016 ema=0.0017 v0=0.0015 v1=0.0020 v2=0.0013
+[Stage1 12000/25000] total=0.0015 ema=0.0017 v0=0.0017 v1=0.0017 v2=0.0011
+[Stage1 12100/25000] total=0.0012 ema=0.0017 v0=0.0015 v1=0.0014 v2=0.0009
+[Stage1 12200/25000] total=0.0013 ema=0.0017 v0=0.0013 v1=0.0019 v2=0.0008
+[Stage1 12300/25000] total=0.0020 ema=0.0016 v0=0.0033 v1=0.0018 v2=0.0009
+[Stage1 12400/25000] total=0.0015 ema=0.0016 v0=0.0020 v1=0.0015 v2=0.0011
+[Stage1 12500/25000] total=0.0011 ema=0.0016 v0=0.0013 v1=0.0013 v2=0.0009
+[Stage1 12600/25000] total=0.0016 ema=0.0015 v0=0.0016 v1=0.0022 v2=0.0010
+[Stage1 12700/25000] total=0.0010 ema=0.0015 v0=0.0012 v1=0.0014 v2=0.0006
+[Stage1 12800/25000] total=0.0013 ema=0.0015 v0=0.0020 v1=0.0014 v2=0.0007
+[Stage1 12900/25000] total=0.0013 ema=0.0014 v0=0.0017 v1=0.0013 v2=0.0007
+[Stage1 13000/25000] total=0.0012 ema=0.0014 v0=0.0015 v1=0.0015 v2=0.0007
+[Stage1 13100/25000] total=0.0015 ema=0.0014 v0=0.0019 v1=0.0017 v2=0.0010
+[Stage1 13200/25000] total=0.0015 ema=0.0014 v0=0.0022 v1=0.0013 v2=0.0009
+[Stage1 13300/25000] total=0.0017 ema=0.0014 v0=0.0025 v1=0.0016 v2=0.0010
+[Stage1 13400/25000] total=0.0012 ema=0.0014 v0=0.0014 v1=0.0015 v2=0.0008
+[Stage1 13500/25000] total=0.0010 ema=0.0014 v0=0.0014 v1=0.0011 v2=0.0007
+[Stage1 13600/25000] total=0.0014 ema=0.0014 v0=0.0015 v1=0.0017 v2=0.0009
+[Stage1 13700/25000] total=0.0012 ema=0.0013 v0=0.0012 v1=0.0014 v2=0.0009
+[Stage1 13800/25000] total=0.0013 ema=0.0013 v0=0.0017 v1=0.0013 v2=0.0009
+[Stage1 13900/25000] total=0.0018 ema=0.0013 v0=0.0028 v1=0.0017 v2=0.0008
+[Stage1 14000/25000] total=0.0011 ema=0.0013 v0=0.0016 v1=0.0011 v2=0.0007
+[Stage1 14100/25000] total=0.0012 ema=0.0012 v0=0.0015 v1=0.0013 v2=0.0008
+[Stage1 14200/25000] total=0.0010 ema=0.0012 v0=0.0012 v1=0.0011 v2=0.0006
+[Stage1 14300/25000] total=0.0011 ema=0.0012 v0=0.0016 v1=0.0012 v2=0.0007
+[Stage1 14400/25000] total=0.0010 ema=0.0012 v0=0.0013 v1=0.0012 v2=0.0005
+[Stage1 14500/25000] total=0.0014 ema=0.0012 v0=0.0022 v1=0.0011 v2=0.0010
+[Stage1 14600/25000] total=0.0009 ema=0.0012 v0=0.0011 v1=0.0010 v2=0.0005
+[Stage1 14700/25000] total=0.0017 ema=0.0012 v0=0.0019 v1=0.0020 v2=0.0011
+[Stage1 14800/25000] total=0.0008 ema=0.0012 v0=0.0010 v1=0.0009 v2=0.0004
+[Stage1 14900/25000] total=0.0008 ema=0.0012 v0=0.0011 v1=0.0009 v2=0.0005
+[Stage1 15000/25000] total=0.0010 ema=0.0011 v0=0.0015 v1=0.0011 v2=0.0006
+[Stage1 15100/25000] total=0.0009 ema=0.0011 v0=0.0012 v1=0.0010 v2=0.0006
+[Stage1 15200/25000] total=0.0011 ema=0.0011 v0=0.0013 v1=0.0012 v2=0.0007
+[Stage1 15300/25000] total=0.0008 ema=0.0011 v0=0.0010 v1=0.0009 v2=0.0004
+[Stage1 15400/25000] total=0.0012 ema=0.0011 v0=0.0013 v1=0.0015 v2=0.0007
+[Stage1 15500/25000] total=0.0012 ema=0.0011 v0=0.0016 v1=0.0013 v2=0.0007
+[Stage1 15600/25000] total=0.0008 ema=0.0011 v0=0.0011 v1=0.0009 v2=0.0005
+[Stage1 15700/25000] total=0.0007 ema=0.0011 v0=0.0011 v1=0.0008 v2=0.0004
+[Stage1 15800/25000] total=0.0011 ema=0.0011 v0=0.0014 v1=0.0012 v2=0.0007
+[Stage1 15900/25000] total=0.0012 ema=0.0010 v0=0.0018 v1=0.0010 v2=0.0008
+[Stage1 16000/25000] total=0.0010 ema=0.0011 v0=0.0011 v1=0.0013 v2=0.0006
+[Stage1 16100/25000] total=0.0012 ema=0.0011 v0=0.0016 v1=0.0012 v2=0.0008
+[Stage1 16200/25000] total=0.0012 ema=0.0010 v0=0.0022 v1=0.0009 v2=0.0006
+[Stage1 16300/25000] total=0.0013 ema=0.0011 v0=0.0016 v1=0.0015 v2=0.0006
+[Stage1 16400/25000] total=0.0008 ema=0.0010 v0=0.0012 v1=0.0009 v2=0.0005
+[Stage1 16500/25000] total=0.0008 ema=0.0010 v0=0.0012 v1=0.0007 v2=0.0004
+[Stage1 16600/25000] total=0.0008 ema=0.0010 v0=0.0012 v1=0.0007 v2=0.0004
+[Stage1 16700/25000] total=0.0010 ema=0.0010 v0=0.0015 v1=0.0010 v2=0.0006
+[Stage1 16800/25000] total=0.0009 ema=0.0009 v0=0.0016 v1=0.0008 v2=0.0004
+[Stage1 16900/25000] total=0.0010 ema=0.0010 v0=0.0016 v1=0.0008 v2=0.0005
+[Stage1 17000/25000] total=0.0011 ema=0.0010 v0=0.0017 v1=0.0010 v2=0.0006
+[Stage1 17100/25000] total=0.0011 ema=0.0010 v0=0.0009 v1=0.0015 v2=0.0009
+[Stage1 17200/25000] total=0.0013 ema=0.0010 v0=0.0018 v1=0.0015 v2=0.0007
+[Stage1 17300/25000] total=0.0008 ema=0.0010 v0=0.0009 v1=0.0010 v2=0.0004
+[Stage1 17400/25000] total=0.0008 ema=0.0009 v0=0.0008 v1=0.0009 v2=0.0007
+[Stage1 17500/25000] total=0.0007 ema=0.0009 v0=0.0009 v1=0.0007 v2=0.0003
+[Stage1 17600/25000] total=0.0009 ema=0.0009 v0=0.0014 v1=0.0008 v2=0.0004
+[Stage1 17700/25000] total=0.0008 ema=0.0009 v0=0.0013 v1=0.0008 v2=0.0004
+[Stage1 17800/25000] total=0.0009 ema=0.0010 v0=0.0012 v1=0.0009 v2=0.0005
+[Stage1 17900/25000] total=0.0006 ema=0.0009 v0=0.0008 v1=0.0007 v2=0.0003
+[Stage1 18000/25000] total=0.0009 ema=0.0010 v0=0.0014 v1=0.0008 v2=0.0005
+[Stage1 18100/25000] total=0.0009 ema=0.0009 v0=0.0011 v1=0.0012 v2=0.0005
+[Stage1 18200/25000] total=0.0011 ema=0.0009 v0=0.0017 v1=0.0011 v2=0.0006
+[Stage1 18300/25000] total=0.0008 ema=0.0009 v0=0.0010 v1=0.0009 v2=0.0004
+[Stage1 18400/25000] total=0.0010 ema=0.0009 v0=0.0013 v1=0.0009 v2=0.0007
+[Stage1 18500/25000] total=0.0009 ema=0.0009 v0=0.0011 v1=0.0011 v2=0.0006
+[Stage1 18600/25000] total=0.0007 ema=0.0010 v0=0.0010 v1=0.0008 v2=0.0004
+[Stage1 18700/25000] total=0.0010 ema=0.0009 v0=0.0011 v1=0.0013 v2=0.0006
+[Stage1 18800/25000] total=0.0008 ema=0.0009 v0=0.0011 v1=0.0009 v2=0.0005
+[Stage1 18900/25000] total=0.0027 ema=0.0009 v0=0.0056 v1=0.0012 v2=0.0011
+[Stage1 19000/25000] total=0.0007 ema=0.0009 v0=0.0009 v1=0.0008 v2=0.0004
+[Stage1 19100/25000] total=0.0008 ema=0.0009 v0=0.0014 v1=0.0007 v2=0.0004
+[Stage1 19200/25000] total=0.0006 ema=0.0009 v0=0.0007 v1=0.0008 v2=0.0004
+[Stage1 19300/25000] total=0.0011 ema=0.0009 v0=0.0016 v1=0.0011 v2=0.0004
+[Stage1 19400/25000] total=0.0008 ema=0.0009 v0=0.0011 v1=0.0008 v2=0.0005
+[Stage1 19500/25000] total=0.0008 ema=0.0009 v0=0.0009 v1=0.0010 v2=0.0004
+[Stage1 19600/25000] total=0.0008 ema=0.0008 v0=0.0011 v1=0.0008 v2=0.0004
+[Stage1 19700/25000] total=0.0007 ema=0.0008 v0=0.0010 v1=0.0008 v2=0.0003
+[Stage1 19800/25000] total=0.0010 ema=0.0009 v0=0.0017 v1=0.0007 v2=0.0005
+[Stage1 19900/25000] total=0.0008 ema=0.0009 v0=0.0014 v1=0.0008 v2=0.0004
+[Stage1 20000/25000] total=0.0007 ema=0.0009 v0=0.0009 v1=0.0008 v2=0.0003
+[Stage1 20100/25000] total=0.0009 ema=0.0009 v0=0.0012 v1=0.0010 v2=0.0004
+[Stage1 20200/25000] total=0.0011 ema=0.0009 v0=0.0018 v1=0.0009 v2=0.0006
+[Stage1 20300/25000] total=0.0007 ema=0.0008 v0=0.0010 v1=0.0007 v2=0.0003
+[Stage1 20400/25000] total=0.0012 ema=0.0008 v0=0.0017 v1=0.0014 v2=0.0006
+[Stage1 20500/25000] total=0.0008 ema=0.0008 v0=0.0011 v1=0.0007 v2=0.0004
+[Stage1 20600/25000] total=0.0008 ema=0.0008 v0=0.0011 v1=0.0009 v2=0.0004
+[Stage1 20700/25000] total=0.0007 ema=0.0008 v0=0.0010 v1=0.0007 v2=0.0003
+[Stage1 20800/25000] total=0.0007 ema=0.0008 v0=0.0011 v1=0.0006 v2=0.0003
+[Stage1 20900/25000] total=0.0008 ema=0.0009 v0=0.0011 v1=0.0009 v2=0.0005
+[Stage1 21000/25000] total=0.0013 ema=0.0008 v0=0.0024 v1=0.0010 v2=0.0006
+[Stage1 21100/25000] total=0.0007 ema=0.0008 v0=0.0009 v1=0.0008 v2=0.0004
+[Stage1 21200/25000] total=0.0010 ema=0.0008 v0=0.0014 v1=0.0010 v2=0.0005
+[Stage1 21300/25000] total=0.0010 ema=0.0008 v0=0.0016 v1=0.0010 v2=0.0004
+[Stage1 21400/25000] total=0.0007 ema=0.0007 v0=0.0010 v1=0.0007 v2=0.0005
+[Stage1 21500/25000] total=0.0006 ema=0.0007 v0=0.0008 v1=0.0006 v2=0.0004
+[Stage1 21600/25000] total=0.0008 ema=0.0007 v0=0.0012 v1=0.0008 v2=0.0003
+[Stage1 21700/25000] total=0.0011 ema=0.0008 v0=0.0016 v1=0.0010 v2=0.0006
+[Stage1 21800/25000] total=0.0016 ema=0.0013 v0=0.0019 v1=0.0018 v2=0.0010
+[Stage1 21900/25000] total=0.0005 ema=0.0010 v0=0.0006 v1=0.0005 v2=0.0003
+[Stage1 22000/25000] total=0.0011 ema=0.0008 v0=0.0018 v1=0.0010 v2=0.0005
+[Stage1 22100/25000] total=0.0006 ema=0.0008 v0=0.0008 v1=0.0005 v2=0.0003
+[Stage1 22200/25000] total=0.0007 ema=0.0008 v0=0.0008 v1=0.0009 v2=0.0003
+[Stage1 22300/25000] total=0.0006 ema=0.0007 v0=0.0010 v1=0.0006 v2=0.0003
+[Stage1 22400/25000] total=0.0007 ema=0.0007 v0=0.0012 v1=0.0006 v2=0.0003
+[Stage1 22500/25000] total=0.0006 ema=0.0007 v0=0.0009 v1=0.0006 v2=0.0004
+[Stage1 22600/25000] total=0.0006 ema=0.0007 v0=0.0008 v1=0.0006 v2=0.0003
+[Stage1 22700/25000] total=0.0010 ema=0.0007 v0=0.0015 v1=0.0010 v2=0.0005
+[Stage1 22800/25000] total=0.0009 ema=0.0007 v0=0.0013 v1=0.0010 v2=0.0004
+[Stage1 22900/25000] total=0.0007 ema=0.0007 v0=0.0009 v1=0.0007 v2=0.0004
+[Stage1 23000/25000] total=0.0008 ema=0.0007 v0=0.0010 v1=0.0009 v2=0.0005
+[Stage1 23100/25000] total=0.0006 ema=0.0008 v0=0.0008 v1=0.0005 v2=0.0003
+[Stage1 23200/25000] total=0.0005 ema=0.0007 v0=0.0007 v1=0.0005 v2=0.0002
+[Stage1 23300/25000] total=0.0009 ema=0.0008 v0=0.0010 v1=0.0013 v2=0.0005
+[Stage1 23400/25000] total=0.0007 ema=0.0007 v0=0.0010 v1=0.0007 v2=0.0004
+[Stage1 23500/25000] total=0.0010 ema=0.0007 v0=0.0015 v1=0.0011 v2=0.0003
+[Stage1 23600/25000] total=0.0010 ema=0.0007 v0=0.0013 v1=0.0010 v2=0.0006
+[Stage1 23700/25000] total=0.0005 ema=0.0007 v0=0.0007 v1=0.0005 v2=0.0003
+[Stage1 23800/25000] total=0.0010 ema=0.0007 v0=0.0012 v1=0.0010 v2=0.0008
+[Stage1 23900/25000] total=0.0007 ema=0.0007 v0=0.0011 v1=0.0007 v2=0.0004
+[Stage1 24000/25000] total=0.0011 ema=0.0007 v0=0.0017 v1=0.0008 v2=0.0008
+[Stage1 24100/25000] total=0.0007 ema=0.0007 v0=0.0010 v1=0.0006 v2=0.0004
+[Stage1 24200/25000] total=0.0007 ema=0.0007 v0=0.0009 v1=0.0008 v2=0.0003
+[Stage1 24300/25000] total=0.0005 ema=0.0007 v0=0.0007 v1=0.0006 v2=0.0002
+[Stage1 24400/25000] total=0.0007 ema=0.0007 v0=0.0009 v1=0.0008 v2=0.0003
+[Stage1 24500/25000] total=0.0006 ema=0.0007 v0=0.0009 v1=0.0006 v2=0.0003
+[Stage1 24600/25000] total=0.0007 ema=0.0007 v0=0.0007 v1=0.0009 v2=0.0004
+[Stage1 24700/25000] total=0.0008 ema=0.0007 v0=0.0010 v1=0.0008 v2=0.0004
+[Stage1 24800/25000] total=0.0009 ema=0.0007 v0=0.0015 v1=0.0007 v2=0.0005
+[Stage1 24900/25000] total=0.0008 ema=0.0007 v0=0.0014 v1=0.0007 v2=0.0004
+[Stage1 25000/25000] total=0.0005 ema=0.0007 v0=0.0007 v1=0.0005 v2=0.0003
+[Stage1] saved teacher weights to /home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs/distill_20260329_173506/vtmae_distill_50000_stage1_teacher.pt
+VT-MAE: Multi-view ViT patch tokeniser (3-view dynamic masking)
+VT-MAE: Multi-view ViT patch tokeniser (3-view dynamic masking)
+[Stage2] teacher total=4,860,244 student total=4,860,244 student trainable=2,241,928 decoder_frozen=1
+[Stage2 100/25000] total=0.1550 ema=0.2993 recon=0.0134 distill=0.1417 recon_enabled=1 recon_by_cam[cam0=0.0136 cam1=0.0130 cam2=0.0135] distill_by_cam[cam0=0.0053 cam1=0.1528 cam2=0.2670]
+[Stage2 200/25000] total=0.0824 ema=0.1933 recon=0.0114 distill=0.0710 recon_enabled=1 recon_by_cam[cam0=0.0128 cam1=0.0110 cam2=0.0105] distill_by_cam[cam0=0.0038 cam1=0.0894 cam2=0.1199]
+[Stage2 300/25000] total=0.2448 ema=0.1560 recon=0.0142 distill=0.2306 recon_enabled=1 recon_by_cam[cam0=0.0133 cam1=0.0144 cam2=0.0149] distill_by_cam[cam0=0.0045 cam1=0.3083 cam2=0.3791]
+[Stage2 400/25000] total=0.1304 ema=0.1351 recon=0.0134 distill=0.1170 recon_enabled=1 recon_by_cam[cam0=0.0131 cam1=0.0142 cam2=0.0130] distill_by_cam[cam0=0.0037 cam1=0.1883 cam2=0.1590]
+[Stage2 500/25000] total=0.1505 ema=0.1282 recon=0.0121 distill=0.1384 recon_enabled=1 recon_by_cam[cam0=0.0121 cam1=0.0121 cam2=0.0122] distill_by_cam[cam0=0.0060 cam1=0.1920 cam2=0.2170]
+[Stage2 600/25000] total=0.0586 ema=0.1215 recon=0.0101 distill=0.0486 recon_enabled=1 recon_by_cam[cam0=0.0105 cam1=0.0096 cam2=0.0101] distill_by_cam[cam0=0.0044 cam1=0.0597 cam2=0.0815]
+[Stage2 700/25000] total=0.2673 ema=0.1152 recon=0.0149 distill=0.2524 recon_enabled=1 recon_by_cam[cam0=0.0140 cam1=0.0149 cam2=0.0158] distill_by_cam[cam0=0.0057 cam1=0.3646 cam2=0.3870]
+[Stage2 800/25000] total=0.1108 ema=0.1103 recon=0.0114 distill=0.0994 recon_enabled=1 recon_by_cam[cam0=0.0113 cam1=0.0113 cam2=0.0116] distill_by_cam[cam0=0.0045 cam1=0.1381 cam2=0.1555]
+[Stage2 900/25000] total=0.0779 ema=0.1059 recon=0.0109 distill=0.0670 recon_enabled=1 recon_by_cam[cam0=0.0105 cam1=0.0114 cam2=0.0109] distill_by_cam[cam0=0.0066 cam1=0.1021 cam2=0.0924]
+[Stage2 1000/25000] total=0.0935 ema=0.0970 recon=0.0112 distill=0.0823 recon_enabled=1 recon_by_cam[cam0=0.0104 cam1=0.0115 cam2=0.0116] distill_by_cam[cam0=0.0048 cam1=0.1032 cam2=0.1390]
+[Stage2 1100/25000] total=0.1374 ema=0.0979 recon=0.0118 distill=0.1257 recon_enabled=1 recon_by_cam[cam0=0.0111 cam1=0.0118 cam2=0.0124] distill_by_cam[cam0=0.0065 cam1=0.1170 cam2=0.2534]
+[Stage2 1200/25000] total=0.0653 ema=0.0941 recon=0.0112 distill=0.0541 recon_enabled=1 recon_by_cam[cam0=0.0096 cam1=0.0115 cam2=0.0127] distill_by_cam[cam0=0.0052 cam1=0.0653 cam2=0.0917]
+[Stage2 1300/25000] total=0.0702 ema=0.0892 recon=0.0110 distill=0.0591 recon_enabled=1 recon_by_cam[cam0=0.0098 cam1=0.0122 cam2=0.0111] distill_by_cam[cam0=0.0028 cam1=0.0680 cam2=0.1067]
+[Stage2 1400/25000] total=0.0709 ema=0.0831 recon=0.0103 distill=0.0606 recon_enabled=1 recon_by_cam[cam0=0.0095 cam1=0.0098 cam2=0.0116] distill_by_cam[cam0=0.0060 cam1=0.0776 cam2=0.0983]
+[Stage2 1500/25000] total=0.0659 ema=0.0778 recon=0.0107 distill=0.0552 recon_enabled=1 recon_by_cam[cam0=0.0102 cam1=0.0109 cam2=0.0110] distill_by_cam[cam0=0.0044 cam1=0.0544 cam2=0.1068]
+[Stage2 1600/25000] total=0.0594 ema=0.0689 recon=0.0106 distill=0.0489 recon_enabled=1 recon_by_cam[cam0=0.0102 cam1=0.0112 cam2=0.0104] distill_by_cam[cam0=0.0050 cam1=0.0675 cam2=0.0741]
+[Stage2 1700/25000] total=0.0466 ema=0.0686 recon=0.0088 distill=0.0378 recon_enabled=1 recon_by_cam[cam0=0.0092 cam1=0.0085 cam2=0.0086] distill_by_cam[cam0=0.0056 cam1=0.0568 cam2=0.0510]
+[Stage2 1800/25000] total=0.0651 ema=0.0652 recon=0.0106 distill=0.0545 recon_enabled=1 recon_by_cam[cam0=0.0105 cam1=0.0104 cam2=0.0110] distill_by_cam[cam0=0.0055 cam1=0.0337 cam2=0.1244]
+[Stage2 1900/25000] total=0.1412 ema=0.0602 recon=0.0113 distill=0.1299 recon_enabled=1 recon_by_cam[cam0=0.0098 cam1=0.0116 cam2=0.0124] distill_by_cam[cam0=0.0047 cam1=0.0985 cam2=0.2866]
+[Stage2 2000/25000] total=0.0599 ema=0.0591 recon=0.0102 distill=0.0497 recon_enabled=1 recon_by_cam[cam0=0.0096 cam1=0.0098 cam2=0.0111] distill_by_cam[cam0=0.0056 cam1=0.0585 cam2=0.0850]
+[Stage2 2100/25000] total=0.0550 ema=0.0594 recon=0.0103 distill=0.0447 recon_enabled=1 recon_by_cam[cam0=0.0098 cam1=0.0096 cam2=0.0115] distill_by_cam[cam0=0.0047 cam1=0.0526 cam2=0.0768]
+[Stage2 2200/25000] total=0.0381 ema=0.0593 recon=0.0084 distill=0.0298 recon_enabled=1 recon_by_cam[cam0=0.0090 cam1=0.0077 cam2=0.0085] distill_by_cam[cam0=0.0035 cam1=0.0393 cam2=0.0465]
+[Stage2 2300/25000] total=0.0454 ema=0.0567 recon=0.0092 distill=0.0361 recon_enabled=1 recon_by_cam[cam0=0.0090 cam1=0.0093 cam2=0.0093] distill_by_cam[cam0=0.0041 cam1=0.0347 cam2=0.0696]
+[Stage2 2400/25000] total=0.0679 ema=0.0545 recon=0.0096 distill=0.0583 recon_enabled=1 recon_by_cam[cam0=0.0091 cam1=0.0092 cam2=0.0107] distill_by_cam[cam0=0.0056 cam1=0.0592 cam2=0.1100]
+[Stage2 2500/25000] total=0.0433 ema=0.0527 recon=0.0102 distill=0.0331 recon_enabled=1 recon_by_cam[cam0=0.0097 cam1=0.0104 cam2=0.0104] distill_by_cam[cam0=0.0040 cam1=0.0430 cam2=0.0523]
+[Stage2 2600/25000] total=0.0412 ema=0.0521 recon=0.0090 distill=0.0322 recon_enabled=1 recon_by_cam[cam0=0.0085 cam1=0.0089 cam2=0.0095] distill_by_cam[cam0=0.0042 cam1=0.0389 cam2=0.0536]
+[Stage2 2700/25000] total=0.0878 ema=0.0483 recon=0.0119 distill=0.0760 recon_enabled=1 recon_by_cam[cam0=0.0103 cam1=0.0120 cam2=0.0132] distill_by_cam[cam0=0.0040 cam1=0.0489 cam2=0.1751]
+[Stage2 2800/25000] total=0.0382 ema=0.0481 recon=0.0092 distill=0.0290 recon_enabled=1 recon_by_cam[cam0=0.0085 cam1=0.0093 cam2=0.0098] distill_by_cam[cam0=0.0034 cam1=0.0266 cam2=0.0571]
+[Stage2 2900/25000] total=0.0491 ema=0.0479 recon=0.0100 distill=0.0391 recon_enabled=1 recon_by_cam[cam0=0.0091 cam1=0.0101 cam2=0.0110] distill_by_cam[cam0=0.0042 cam1=0.0377 cam2=0.0753]
+[Stage2 3000/25000] total=0.0508 ema=0.0439 recon=0.0095 distill=0.0414 recon_enabled=1 recon_by_cam[cam0=0.0081 cam1=0.0102 cam2=0.0102] distill_by_cam[cam0=0.0043 cam1=0.0533 cam2=0.0664]
+[Stage2 3100/25000] total=0.0459 ema=0.0441 recon=0.0091 distill=0.0368 recon_enabled=1 recon_by_cam[cam0=0.0090 cam1=0.0086 cam2=0.0098] distill_by_cam[cam0=0.0050 cam1=0.0379 cam2=0.0674]
+[Stage2 3200/25000] total=0.0378 ema=0.0435 recon=0.0081 distill=0.0297 recon_enabled=1 recon_by_cam[cam0=0.0073 cam1=0.0085 cam2=0.0086] distill_by_cam[cam0=0.0036 cam1=0.0406 cam2=0.0449]
+[Stage2 3300/25000] total=0.0318 ema=0.0430 recon=0.0075 distill=0.0243 recon_enabled=1 recon_by_cam[cam0=0.0072 cam1=0.0077 cam2=0.0077] distill_by_cam[cam0=0.0053 cam1=0.0388 cam2=0.0286]
+[Stage2 3400/25000] total=0.0346 ema=0.0434 recon=0.0078 distill=0.0268 recon_enabled=1 recon_by_cam[cam0=0.0075 cam1=0.0076 cam2=0.0083] distill_by_cam[cam0=0.0057 cam1=0.0383 cam2=0.0364]
+[Stage2 3500/25000] total=0.0418 ema=0.0405 recon=0.0080 distill=0.0338 recon_enabled=1 recon_by_cam[cam0=0.0073 cam1=0.0084 cam2=0.0083] distill_by_cam[cam0=0.0043 cam1=0.0359 cam2=0.0611]
+[Stage2 3600/25000] total=0.0451 ema=0.0409 recon=0.0092 distill=0.0359 recon_enabled=1 recon_by_cam[cam0=0.0081 cam1=0.0096 cam2=0.0100] distill_by_cam[cam0=0.0050 cam1=0.0388 cam2=0.0640]
+[Stage2 3700/25000] total=0.0264 ema=0.0402 recon=0.0070 distill=0.0194 recon_enabled=1 recon_by_cam[cam0=0.0071 cam1=0.0073 cam2=0.0067] distill_by_cam[cam0=0.0048 cam1=0.0273 cam2=0.0260]
+[Stage2 3800/25000] total=0.0381 ema=0.0395 recon=0.0094 distill=0.0287 recon_enabled=1 recon_by_cam[cam0=0.0072 cam1=0.0108 cam2=0.0103] distill_by_cam[cam0=0.0063 cam1=0.0349 cam2=0.0448]
+[Stage2 3900/25000] total=0.0390 ema=0.0381 recon=0.0101 distill=0.0289 recon_enabled=1 recon_by_cam[cam0=0.0091 cam1=0.0107 cam2=0.0107] distill_by_cam[cam0=0.0048 cam1=0.0432 cam2=0.0387]
+[Stage2 4000/25000] total=0.0298 ema=0.0364 recon=0.0074 distill=0.0224 recon_enabled=1 recon_by_cam[cam0=0.0068 cam1=0.0078 cam2=0.0076] distill_by_cam[cam0=0.0030 cam1=0.0293 cam2=0.0349]
+[Stage2 4100/25000] total=0.0405 ema=0.0366 recon=0.0102 distill=0.0303 recon_enabled=1 recon_by_cam[cam0=0.0090 cam1=0.0104 cam2=0.0112] distill_by_cam[cam0=0.0064 cam1=0.0301 cam2=0.0543]
+[Stage2 4200/25000] total=0.0305 ema=0.0364 recon=0.0079 distill=0.0226 recon_enabled=1 recon_by_cam[cam0=0.0072 cam1=0.0085 cam2=0.0081] distill_by_cam[cam0=0.0037 cam1=0.0367 cam2=0.0274]
+[Stage2 4300/25000] total=0.0376 ema=0.0347 recon=0.0097 distill=0.0280 recon_enabled=1 recon_by_cam[cam0=0.0077 cam1=0.0102 cam2=0.0111] distill_by_cam[cam0=0.0033 cam1=0.0408 cam2=0.0398]
+[Stage2 4400/25000] total=0.0321 ema=0.0340 recon=0.0076 distill=0.0245 recon_enabled=1 recon_by_cam[cam0=0.0066 cam1=0.0081 cam2=0.0080] distill_by_cam[cam0=0.0030 cam1=0.0279 cam2=0.0426]
+[Stage2 4500/25000] total=0.0292 ema=0.0332 recon=0.0064 distill=0.0228 recon_enabled=1 recon_by_cam[cam0=0.0056 cam1=0.0066 cam2=0.0070] distill_by_cam[cam0=0.0042 cam1=0.0274 cam2=0.0368]
+[Stage2 4600/25000] total=0.0330 ema=0.0343 recon=0.0073 distill=0.0257 recon_enabled=1 recon_by_cam[cam0=0.0066 cam1=0.0077 cam2=0.0077] distill_by_cam[cam0=0.0036 cam1=0.0321 cam2=0.0413]
+[Stage2 4700/25000] total=0.0309 ema=0.0333 recon=0.0078 distill=0.0231 recon_enabled=1 recon_by_cam[cam0=0.0064 cam1=0.0077 cam2=0.0093] distill_by_cam[cam0=0.0039 cam1=0.0314 cam2=0.0342]
+[Stage2 4800/25000] total=0.0284 ema=0.0323 recon=0.0082 distill=0.0202 recon_enabled=1 recon_by_cam[cam0=0.0084 cam1=0.0078 cam2=0.0086] distill_by_cam[cam0=0.0027 cam1=0.0243 cam2=0.0336]
+[Stage2 4900/25000] total=0.0271 ema=0.0323 recon=0.0088 distill=0.0183 recon_enabled=1 recon_by_cam[cam0=0.0066 cam1=0.0084 cam2=0.0113] distill_by_cam[cam0=0.0032 cam1=0.0248 cam2=0.0269]
+[Stage2 5000/25000] total=0.0236 ema=0.0332 recon=0.0068 distill=0.0167 recon_enabled=1 recon_by_cam[cam0=0.0057 cam1=0.0073 cam2=0.0074] distill_by_cam[cam0=0.0028 cam1=0.0246 cam2=0.0229]
+[Stage2 5100/25000] total=0.0310 ema=0.0325 recon=0.0076 distill=0.0234 recon_enabled=1 recon_by_cam[cam0=0.0061 cam1=0.0082 cam2=0.0086] distill_by_cam[cam0=0.0053 cam1=0.0297 cam2=0.0351]
+[Stage2 5200/25000] total=0.0462 ema=0.0335 recon=0.0101 distill=0.0361 recon_enabled=1 recon_by_cam[cam0=0.0067 cam1=0.0107 cam2=0.0129] distill_by_cam[cam0=0.0060 cam1=0.0515 cam2=0.0507]
+[Stage2 5300/25000] total=0.0256 ema=0.0322 recon=0.0069 distill=0.0187 recon_enabled=1 recon_by_cam[cam0=0.0053 cam1=0.0074 cam2=0.0080] distill_by_cam[cam0=0.0040 cam1=0.0207 cam2=0.0314]
+[Stage2 5400/25000] total=0.0214 ema=0.0298 recon=0.0058 distill=0.0156 recon_enabled=1 recon_by_cam[cam0=0.0048 cam1=0.0062 cam2=0.0063] distill_by_cam[cam0=0.0026 cam1=0.0210 cam2=0.0233]
+[Stage2 5500/25000] total=0.0238 ema=0.0315 recon=0.0065 distill=0.0173 recon_enabled=1 recon_by_cam[cam0=0.0059 cam1=0.0067 cam2=0.0069] distill_by_cam[cam0=0.0024 cam1=0.0213 cam2=0.0283]
+[Stage2 5600/25000] total=0.0380 ema=0.0306 recon=0.0091 distill=0.0288 recon_enabled=1 recon_by_cam[cam0=0.0061 cam1=0.0097 cam2=0.0115] distill_by_cam[cam0=0.0035 cam1=0.0375 cam2=0.0455]
+[Stage2 5700/25000] total=0.0259 ema=0.0302 recon=0.0084 distill=0.0175 recon_enabled=1 recon_by_cam[cam0=0.0058 cam1=0.0092 cam2=0.0102] distill_by_cam[cam0=0.0031 cam1=0.0198 cam2=0.0296]
+[Stage2 5800/25000] total=0.0304 ema=0.0297 recon=0.0063 distill=0.0241 recon_enabled=1 recon_by_cam[cam0=0.0051 cam1=0.0062 cam2=0.0076] distill_by_cam[cam0=0.0039 cam1=0.0344 cam2=0.0339]
+[Stage2 5900/25000] total=0.0268 ema=0.0292 recon=0.0085 distill=0.0183 recon_enabled=1 recon_by_cam[cam0=0.0051 cam1=0.0089 cam2=0.0115] distill_by_cam[cam0=0.0033 cam1=0.0243 cam2=0.0273]
+[Stage2 6000/25000] total=0.0201 ema=0.0289 recon=0.0049 distill=0.0152 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0053 cam2=0.0052] distill_by_cam[cam0=0.0034 cam1=0.0177 cam2=0.0246]
+[Stage2 6100/25000] total=0.0207 ema=0.0294 recon=0.0058 distill=0.0149 recon_enabled=1 recon_by_cam[cam0=0.0045 cam1=0.0066 cam2=0.0062] distill_by_cam[cam0=0.0032 cam1=0.0214 cam2=0.0202]
+[Stage2 6200/25000] total=0.0293 ema=0.0281 recon=0.0062 distill=0.0230 recon_enabled=1 recon_by_cam[cam0=0.0048 cam1=0.0065 cam2=0.0073] distill_by_cam[cam0=0.0034 cam1=0.0321 cam2=0.0336]
+[Stage2 6300/25000] total=0.0271 ema=0.0289 recon=0.0059 distill=0.0212 recon_enabled=1 recon_by_cam[cam0=0.0052 cam1=0.0061 cam2=0.0065] distill_by_cam[cam0=0.0040 cam1=0.0243 cam2=0.0353]
+[Stage2 6400/25000] total=0.0327 ema=0.0293 recon=0.0076 distill=0.0251 recon_enabled=1 recon_by_cam[cam0=0.0054 cam1=0.0075 cam2=0.0099] distill_by_cam[cam0=0.0042 cam1=0.0329 cam2=0.0383]
+[Stage2 6500/25000] total=0.0442 ema=0.0302 recon=0.0071 distill=0.0371 recon_enabled=1 recon_by_cam[cam0=0.0056 cam1=0.0079 cam2=0.0077] distill_by_cam[cam0=0.0070 cam1=0.0561 cam2=0.0482]
+[Stage2 6600/25000] total=0.0276 ema=0.0299 recon=0.0080 distill=0.0196 recon_enabled=1 recon_by_cam[cam0=0.0059 cam1=0.0090 cam2=0.0091] distill_by_cam[cam0=0.0031 cam1=0.0274 cam2=0.0283]
+[Stage2 6700/25000] total=0.0233 ema=0.0296 recon=0.0060 distill=0.0172 recon_enabled=1 recon_by_cam[cam0=0.0049 cam1=0.0072 cam2=0.0059] distill_by_cam[cam0=0.0028 cam1=0.0269 cam2=0.0219]
+[Stage2 6800/25000] total=0.0251 ema=0.0292 recon=0.0058 distill=0.0193 recon_enabled=1 recon_by_cam[cam0=0.0048 cam1=0.0063 cam2=0.0062] distill_by_cam[cam0=0.0032 cam1=0.0334 cam2=0.0214]
+[Stage2 6900/25000] total=0.0177 ema=0.0284 recon=0.0052 distill=0.0125 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0058 cam2=0.0058] distill_by_cam[cam0=0.0025 cam1=0.0138 cam2=0.0210]
+[Stage2 7000/25000] total=0.0315 ema=0.0294 recon=0.0075 distill=0.0240 recon_enabled=1 recon_by_cam[cam0=0.0053 cam1=0.0082 cam2=0.0090] distill_by_cam[cam0=0.0037 cam1=0.0456 cam2=0.0228]
+[Stage2 7100/25000] total=0.0296 ema=0.0288 recon=0.0082 distill=0.0214 recon_enabled=1 recon_by_cam[cam0=0.0050 cam1=0.0093 cam2=0.0101] distill_by_cam[cam0=0.0034 cam1=0.0307 cam2=0.0303]
+[Stage2 7200/25000] total=0.0213 ema=0.0281 recon=0.0045 distill=0.0168 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0050 cam2=0.0049] distill_by_cam[cam0=0.0016 cam1=0.0237 cam2=0.0250]
+[Stage2 7300/25000] total=0.0196 ema=0.0274 recon=0.0060 distill=0.0136 recon_enabled=1 recon_by_cam[cam0=0.0047 cam1=0.0067 cam2=0.0065] distill_by_cam[cam0=0.0028 cam1=0.0192 cam2=0.0189]
+[Stage2 7400/25000] total=0.0253 ema=0.0268 recon=0.0084 distill=0.0170 recon_enabled=1 recon_by_cam[cam0=0.0051 cam1=0.0095 cam2=0.0106] distill_by_cam[cam0=0.0031 cam1=0.0206 cam2=0.0271]
+[Stage2 7500/25000] total=0.0234 ema=0.0269 recon=0.0056 distill=0.0178 recon_enabled=1 recon_by_cam[cam0=0.0048 cam1=0.0056 cam2=0.0063] distill_by_cam[cam0=0.0028 cam1=0.0263 cam2=0.0243]
+[Stage2 7600/25000] total=0.0291 ema=0.0259 recon=0.0058 distill=0.0232 recon_enabled=1 recon_by_cam[cam0=0.0046 cam1=0.0064 cam2=0.0065] distill_by_cam[cam0=0.0031 cam1=0.0286 cam2=0.0380]
+[Stage2 7700/25000] total=0.0257 ema=0.0268 recon=0.0070 distill=0.0187 recon_enabled=1 recon_by_cam[cam0=0.0044 cam1=0.0077 cam2=0.0088] distill_by_cam[cam0=0.0036 cam1=0.0262 cam2=0.0264]
+[Stage2 7800/25000] total=0.0363 ema=0.0265 recon=0.0066 distill=0.0297 recon_enabled=1 recon_by_cam[cam0=0.0050 cam1=0.0073 cam2=0.0076] distill_by_cam[cam0=0.0057 cam1=0.0413 cam2=0.0421]
+[Stage2 7900/25000] total=0.0229 ema=0.0258 recon=0.0047 distill=0.0182 recon_enabled=1 recon_by_cam[cam0=0.0040 cam1=0.0051 cam2=0.0050] distill_by_cam[cam0=0.0024 cam1=0.0278 cam2=0.0245]
+[Stage2 8000/25000] total=0.0223 ema=0.0257 recon=0.0046 distill=0.0176 recon_enabled=1 recon_by_cam[cam0=0.0039 cam1=0.0051 cam2=0.0049] distill_by_cam[cam0=0.0030 cam1=0.0276 cam2=0.0223]
+[Stage2 8100/25000] total=0.0227 ema=0.0263 recon=0.0048 distill=0.0179 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0045 cam2=0.0058] distill_by_cam[cam0=0.0026 cam1=0.0273 cam2=0.0238]
+[Stage2 8200/25000] total=0.0214 ema=0.0255 recon=0.0068 distill=0.0145 recon_enabled=1 recon_by_cam[cam0=0.0038 cam1=0.0078 cam2=0.0089] distill_by_cam[cam0=0.0024 cam1=0.0215 cam2=0.0197]
+[Stage2 8300/25000] total=0.0222 ema=0.0252 recon=0.0060 distill=0.0162 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0072 cam2=0.0068] distill_by_cam[cam0=0.0025 cam1=0.0224 cam2=0.0236]
+[Stage2 8400/25000] total=0.0261 ema=0.0264 recon=0.0074 distill=0.0187 recon_enabled=1 recon_by_cam[cam0=0.0052 cam1=0.0085 cam2=0.0086] distill_by_cam[cam0=0.0032 cam1=0.0229 cam2=0.0300]
+[Stage2 8500/25000] total=0.0376 ema=0.0258 recon=0.0073 distill=0.0303 recon_enabled=1 recon_by_cam[cam0=0.0050 cam1=0.0083 cam2=0.0086] distill_by_cam[cam0=0.0034 cam1=0.0455 cam2=0.0419]
+[Stage2 8600/25000] total=0.0279 ema=0.0257 recon=0.0050 distill=0.0229 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0051 cam2=0.0058] distill_by_cam[cam0=0.0024 cam1=0.0350 cam2=0.0312]
+[Stage2 8700/25000] total=0.0187 ema=0.0246 recon=0.0046 distill=0.0141 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0054 cam2=0.0052] distill_by_cam[cam0=0.0024 cam1=0.0236 cam2=0.0164]
+[Stage2 8800/25000] total=0.0240 ema=0.0256 recon=0.0069 distill=0.0171 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0075 cam2=0.0090] distill_by_cam[cam0=0.0041 cam1=0.0239 cam2=0.0232]
+[Stage2 8900/25000] total=0.0182 ema=0.0259 recon=0.0058 distill=0.0124 recon_enabled=1 recon_by_cam[cam0=0.0033 cam1=0.0069 cam2=0.0071] distill_by_cam[cam0=0.0025 cam1=0.0184 cam2=0.0162]
+[Stage2 9000/25000] total=0.0237 ema=0.0248 recon=0.0057 distill=0.0180 recon_enabled=1 recon_by_cam[cam0=0.0047 cam1=0.0056 cam2=0.0068] distill_by_cam[cam0=0.0023 cam1=0.0253 cam2=0.0262]
+[Stage2 9100/25000] total=0.0212 ema=0.0254 recon=0.0053 distill=0.0160 recon_enabled=1 recon_by_cam[cam0=0.0042 cam1=0.0055 cam2=0.0061] distill_by_cam[cam0=0.0023 cam1=0.0227 cam2=0.0229]
+[Stage2 9200/25000] total=0.0290 ema=0.0259 recon=0.0061 distill=0.0229 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0062 cam2=0.0081] distill_by_cam[cam0=0.0041 cam1=0.0350 cam2=0.0295]
+[Stage2 9300/25000] total=0.0194 ema=0.0259 recon=0.0057 distill=0.0137 recon_enabled=1 recon_by_cam[cam0=0.0042 cam1=0.0065 cam2=0.0066] distill_by_cam[cam0=0.0024 cam1=0.0193 cam2=0.0193]
+[Stage2 9400/25000] total=0.0212 ema=0.0243 recon=0.0074 distill=0.0138 recon_enabled=1 recon_by_cam[cam0=0.0046 cam1=0.0084 cam2=0.0092] distill_by_cam[cam0=0.0029 cam1=0.0187 cam2=0.0198]
+[Stage2 9500/25000] total=0.0266 ema=0.0242 recon=0.0071 distill=0.0195 recon_enabled=1 recon_by_cam[cam0=0.0036 cam1=0.0085 cam2=0.0091] distill_by_cam[cam0=0.0025 cam1=0.0261 cam2=0.0299]
+[Stage2 9600/25000] total=0.0277 ema=0.0249 recon=0.0061 distill=0.0216 recon_enabled=1 recon_by_cam[cam0=0.0036 cam1=0.0070 cam2=0.0078] distill_by_cam[cam0=0.0033 cam1=0.0320 cam2=0.0295]
+[Stage2 9700/25000] total=0.0194 ema=0.0248 recon=0.0054 distill=0.0140 recon_enabled=1 recon_by_cam[cam0=0.0034 cam1=0.0062 cam2=0.0066] distill_by_cam[cam0=0.0026 cam1=0.0210 cam2=0.0183]
+[Stage2 9800/25000] total=0.0214 ema=0.0242 recon=0.0055 distill=0.0159 recon_enabled=1 recon_by_cam[cam0=0.0045 cam1=0.0056 cam2=0.0063] distill_by_cam[cam0=0.0038 cam1=0.0211 cam2=0.0229]
+[Stage2 9900/25000] total=0.0193 ema=0.0240 recon=0.0046 distill=0.0146 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0050 cam2=0.0057] distill_by_cam[cam0=0.0025 cam1=0.0219 cam2=0.0195]
+[Stage2 10000/25000] total=0.0205 ema=0.0228 recon=0.0056 distill=0.0149 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0060 cam2=0.0070] distill_by_cam[cam0=0.0030 cam1=0.0237 cam2=0.0181]
+[Stage2 10100/25000] total=0.0261 ema=0.0234 recon=0.0062 distill=0.0200 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0073 cam2=0.0075] distill_by_cam[cam0=0.0038 cam1=0.0288 cam2=0.0273]
+[Stage2 10200/25000] total=0.0217 ema=0.0241 recon=0.0061 distill=0.0156 recon_enabled=1 recon_by_cam[cam0=0.0050 cam1=0.0063 cam2=0.0071] distill_by_cam[cam0=0.0027 cam1=0.0190 cam2=0.0251]
+[Stage2 10300/25000] total=0.0165 ema=0.0247 recon=0.0051 distill=0.0114 recon_enabled=1 recon_by_cam[cam0=0.0035 cam1=0.0058 cam2=0.0060] distill_by_cam[cam0=0.0026 cam1=0.0138 cam2=0.0179]
+[Stage2 10400/25000] total=0.0253 ema=0.0249 recon=0.0052 distill=0.0201 recon_enabled=1 recon_by_cam[cam0=0.0042 cam1=0.0053 cam2=0.0062] distill_by_cam[cam0=0.0032 cam1=0.0359 cam2=0.0212]
+[Stage2 10500/25000] total=0.0432 ema=0.0259 recon=0.0054 distill=0.0378 recon_enabled=1 recon_by_cam[cam0=0.0032 cam1=0.0061 cam2=0.0068] distill_by_cam[cam0=0.0054 cam1=0.0544 cam2=0.0537]
+[Stage2 10600/25000] total=0.0214 ema=0.0249 recon=0.0052 distill=0.0161 recon_enabled=1 recon_by_cam[cam0=0.0039 cam1=0.0054 cam2=0.0064] distill_by_cam[cam0=0.0028 cam1=0.0247 cam2=0.0209]
+[Stage2 10700/25000] total=0.0179 ema=0.0233 recon=0.0054 distill=0.0126 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0059 cam2=0.0071] distill_by_cam[cam0=0.0020 cam1=0.0174 cam2=0.0183]
+[Stage2 10800/25000] total=0.0220 ema=0.0239 recon=0.0058 distill=0.0163 recon_enabled=1 recon_by_cam[cam0=0.0040 cam1=0.0064 cam2=0.0069] distill_by_cam[cam0=0.0031 cam1=0.0213 cam2=0.0244]
+[Stage2 10900/25000] total=0.0297 ema=0.0240 recon=0.0074 distill=0.0223 recon_enabled=1 recon_by_cam[cam0=0.0044 cam1=0.0085 cam2=0.0093] distill_by_cam[cam0=0.0028 cam1=0.0322 cam2=0.0321]
+[Stage2 11000/25000] total=0.0266 ema=0.0232 recon=0.0049 distill=0.0217 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0051 cam2=0.0056] distill_by_cam[cam0=0.0022 cam1=0.0475 cam2=0.0153]
+[Stage2 11100/25000] total=0.0339 ema=0.0229 recon=0.0066 distill=0.0273 recon_enabled=1 recon_by_cam[cam0=0.0044 cam1=0.0068 cam2=0.0084] distill_by_cam[cam0=0.0033 cam1=0.0342 cam2=0.0444]
+[Stage2 11200/25000] total=0.0214 ema=0.0225 recon=0.0060 distill=0.0154 recon_enabled=1 recon_by_cam[cam0=0.0049 cam1=0.0060 cam2=0.0071] distill_by_cam[cam0=0.0027 cam1=0.0206 cam2=0.0229]
+[Stage2 11300/25000] total=0.0196 ema=0.0226 recon=0.0039 distill=0.0157 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0047 cam2=0.0042] distill_by_cam[cam0=0.0025 cam1=0.0194 cam2=0.0253]
+[Stage2 11400/25000] total=0.0266 ema=0.0220 recon=0.0059 distill=0.0207 recon_enabled=1 recon_by_cam[cam0=0.0051 cam1=0.0055 cam2=0.0072] distill_by_cam[cam0=0.0031 cam1=0.0301 cam2=0.0289]
+[Stage2 11500/25000] total=0.0257 ema=0.0218 recon=0.0038 distill=0.0219 recon_enabled=1 recon_by_cam[cam0=0.0024 cam1=0.0045 cam2=0.0045] distill_by_cam[cam0=0.0024 cam1=0.0386 cam2=0.0248]
+[Stage2 11600/25000] total=0.0264 ema=0.0229 recon=0.0069 distill=0.0195 recon_enabled=1 recon_by_cam[cam0=0.0039 cam1=0.0075 cam2=0.0092] distill_by_cam[cam0=0.0029 cam1=0.0341 cam2=0.0216]
+[Stage2 11700/25000] total=0.0199 ema=0.0221 recon=0.0072 distill=0.0126 recon_enabled=1 recon_by_cam[cam0=0.0038 cam1=0.0082 cam2=0.0097] distill_by_cam[cam0=0.0028 cam1=0.0141 cam2=0.0209]
+[Stage2 11800/25000] total=0.0271 ema=0.0227 recon=0.0055 distill=0.0215 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0060 cam2=0.0069] distill_by_cam[cam0=0.0032 cam1=0.0290 cam2=0.0325]
+[Stage2 11900/25000] total=0.0203 ema=0.0221 recon=0.0047 distill=0.0155 recon_enabled=1 recon_by_cam[cam0=0.0033 cam1=0.0055 cam2=0.0054] distill_by_cam[cam0=0.0016 cam1=0.0269 cam2=0.0180]
+[Stage2 12000/25000] total=0.0176 ema=0.0220 recon=0.0038 distill=0.0138 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0040 cam2=0.0043] distill_by_cam[cam0=0.0020 cam1=0.0194 cam2=0.0201]
+[Stage2 12100/25000] total=0.0168 ema=0.0224 recon=0.0041 distill=0.0127 recon_enabled=1 recon_by_cam[cam0=0.0029 cam1=0.0043 cam2=0.0050] distill_by_cam[cam0=0.0019 cam1=0.0185 cam2=0.0178]
+[Stage2 12200/25000] total=0.0197 ema=0.0219 recon=0.0059 distill=0.0138 recon_enabled=1 recon_by_cam[cam0=0.0039 cam1=0.0069 cam2=0.0068] distill_by_cam[cam0=0.0027 cam1=0.0220 cam2=0.0169]
+[Stage2 12300/25000] total=0.0255 ema=0.0219 recon=0.0063 distill=0.0192 recon_enabled=1 recon_by_cam[cam0=0.0055 cam1=0.0063 cam2=0.0071] distill_by_cam[cam0=0.0023 cam1=0.0286 cam2=0.0268]
+[Stage2 12400/25000] total=0.0218 ema=0.0217 recon=0.0060 distill=0.0157 recon_enabled=1 recon_by_cam[cam0=0.0048 cam1=0.0062 cam2=0.0071] distill_by_cam[cam0=0.0029 cam1=0.0222 cam2=0.0221]
+[Stage2 12500/25000] total=0.0283 ema=0.0220 recon=0.0056 distill=0.0227 recon_enabled=1 recon_by_cam[cam0=0.0043 cam1=0.0058 cam2=0.0069] distill_by_cam[cam0=0.0040 cam1=0.0404 cam2=0.0237]
+[Stage2 12600/25000] total=0.0208 ema=0.0226 recon=0.0050 distill=0.0159 recon_enabled=1 recon_by_cam[cam0=0.0035 cam1=0.0053 cam2=0.0062] distill_by_cam[cam0=0.0027 cam1=0.0250 cam2=0.0199]
+[Stage2 12700/25000] total=0.0183 ema=0.0218 recon=0.0045 distill=0.0138 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0050 cam2=0.0057] distill_by_cam[cam0=0.0018 cam1=0.0193 cam2=0.0204]
+[Stage2 12800/25000] total=0.0160 ema=0.0220 recon=0.0035 distill=0.0125 recon_enabled=1 recon_by_cam[cam0=0.0027 cam1=0.0037 cam2=0.0039] distill_by_cam[cam0=0.0019 cam1=0.0184 cam2=0.0173]
+[Stage2 12900/25000] total=0.0204 ema=0.0229 recon=0.0065 distill=0.0139 recon_enabled=1 recon_by_cam[cam0=0.0040 cam1=0.0073 cam2=0.0083] distill_by_cam[cam0=0.0024 cam1=0.0185 cam2=0.0207]
+[Stage2 13000/25000] total=0.0276 ema=0.0223 recon=0.0067 distill=0.0210 recon_enabled=1 recon_by_cam[cam0=0.0040 cam1=0.0075 cam2=0.0086] distill_by_cam[cam0=0.0025 cam1=0.0293 cam2=0.0310]
+[Stage2 13100/25000] total=0.0172 ema=0.0223 recon=0.0049 distill=0.0123 recon_enabled=1 recon_by_cam[cam0=0.0045 cam1=0.0045 cam2=0.0055] distill_by_cam[cam0=0.0021 cam1=0.0158 cam2=0.0191]
+[Stage2 13200/25000] total=0.0144 ema=0.0221 recon=0.0043 distill=0.0101 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0044 cam2=0.0060] distill_by_cam[cam0=0.0017 cam1=0.0124 cam2=0.0162]
+[Stage2 13300/25000] total=0.0626 ema=0.0214 recon=0.0065 distill=0.0561 recon_enabled=1 recon_by_cam[cam0=0.0033 cam1=0.0078 cam2=0.0083] distill_by_cam[cam0=0.0026 cam1=0.1462 cam2=0.0194]
+[Stage2 13400/25000] total=0.0329 ema=0.0223 recon=0.0077 distill=0.0252 recon_enabled=1 recon_by_cam[cam0=0.0050 cam1=0.0084 cam2=0.0098] distill_by_cam[cam0=0.0037 cam1=0.0231 cam2=0.0488]
+[Stage2 13500/25000] total=0.0256 ema=0.0220 recon=0.0056 distill=0.0200 recon_enabled=1 recon_by_cam[cam0=0.0046 cam1=0.0056 cam2=0.0065] distill_by_cam[cam0=0.0024 cam1=0.0385 cam2=0.0190]
+[Stage2 13600/25000] total=0.0197 ema=0.0224 recon=0.0051 distill=0.0146 recon_enabled=1 recon_by_cam[cam0=0.0033 cam1=0.0058 cam2=0.0062] distill_by_cam[cam0=0.0031 cam1=0.0205 cam2=0.0202]
+[Stage2 13700/25000] total=0.0166 ema=0.0216 recon=0.0059 distill=0.0107 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0065 cam2=0.0080] distill_by_cam[cam0=0.0028 cam1=0.0145 cam2=0.0148]
+[Stage2 13800/25000] total=0.0182 ema=0.0209 recon=0.0048 distill=0.0134 recon_enabled=1 recon_by_cam[cam0=0.0043 cam1=0.0044 cam2=0.0058] distill_by_cam[cam0=0.0019 cam1=0.0188 cam2=0.0195]
+[Stage2 13900/25000] total=0.0198 ema=0.0204 recon=0.0049 distill=0.0148 recon_enabled=1 recon_by_cam[cam0=0.0040 cam1=0.0048 cam2=0.0061] distill_by_cam[cam0=0.0028 cam1=0.0213 cam2=0.0204]
+[Stage2 14000/25000] total=0.0175 ema=0.0200 recon=0.0060 distill=0.0114 recon_enabled=1 recon_by_cam[cam0=0.0023 cam1=0.0076 cam2=0.0081] distill_by_cam[cam0=0.0023 cam1=0.0182 cam2=0.0139]
+[Stage2 14100/25000] total=0.0175 ema=0.0198 recon=0.0048 distill=0.0128 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0047 cam2=0.0060] distill_by_cam[cam0=0.0030 cam1=0.0163 cam2=0.0190]
+[Stage2 14200/25000] total=0.0209 ema=0.0209 recon=0.0034 distill=0.0174 recon_enabled=1 recon_by_cam[cam0=0.0024 cam1=0.0037 cam2=0.0042] distill_by_cam[cam0=0.0020 cam1=0.0319 cam2=0.0184]
+[Stage2 14300/25000] total=0.0223 ema=0.0220 recon=0.0043 distill=0.0180 recon_enabled=1 recon_by_cam[cam0=0.0038 cam1=0.0041 cam2=0.0051] distill_by_cam[cam0=0.0029 cam1=0.0300 cam2=0.0211]
+[Stage2 14400/25000] total=0.0295 ema=0.0212 recon=0.0059 distill=0.0236 recon_enabled=1 recon_by_cam[cam0=0.0035 cam1=0.0071 cam2=0.0072] distill_by_cam[cam0=0.0024 cam1=0.0363 cam2=0.0321]
+[Stage2 14500/25000] total=0.0211 ema=0.0213 recon=0.0050 distill=0.0161 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0053 cam2=0.0060] distill_by_cam[cam0=0.0045 cam1=0.0212 cam2=0.0226]
+[Stage2 14600/25000] total=0.0178 ema=0.0213 recon=0.0036 distill=0.0142 recon_enabled=1 recon_by_cam[cam0=0.0024 cam1=0.0039 cam2=0.0043] distill_by_cam[cam0=0.0021 cam1=0.0191 cam2=0.0215]
+[Stage2 14700/25000] total=0.0230 ema=0.0210 recon=0.0066 distill=0.0164 recon_enabled=1 recon_by_cam[cam0=0.0050 cam1=0.0062 cam2=0.0087] distill_by_cam[cam0=0.0024 cam1=0.0200 cam2=0.0268]
+[Stage2 14800/25000] total=0.0225 ema=0.0199 recon=0.0049 distill=0.0176 recon_enabled=1 recon_by_cam[cam0=0.0029 cam1=0.0051 cam2=0.0066] distill_by_cam[cam0=0.0019 cam1=0.0238 cam2=0.0272]
+[Stage2 14900/25000] total=0.0161 ema=0.0193 recon=0.0043 distill=0.0118 recon_enabled=1 recon_by_cam[cam0=0.0032 cam1=0.0043 cam2=0.0054] distill_by_cam[cam0=0.0019 cam1=0.0189 cam2=0.0145]
+[Stage2 15000/25000] total=0.0262 ema=0.0197 recon=0.0044 distill=0.0217 recon_enabled=1 recon_by_cam[cam0=0.0038 cam1=0.0044 cam2=0.0051] distill_by_cam[cam0=0.0025 cam1=0.0322 cam2=0.0305]
+[Stage2 15100/25000] total=0.0164 ema=0.0198 recon=0.0046 distill=0.0118 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0051 cam2=0.0059] distill_by_cam[cam0=0.0019 cam1=0.0170 cam2=0.0166]
+[Stage2 15200/25000] total=0.0218 ema=0.0202 recon=0.0046 distill=0.0173 recon_enabled=1 recon_by_cam[cam0=0.0022 cam1=0.0056 cam2=0.0058] distill_by_cam[cam0=0.0022 cam1=0.0207 cam2=0.0289]
+[Stage2 15300/25000] total=0.0259 ema=0.0198 recon=0.0049 distill=0.0210 recon_enabled=1 recon_by_cam[cam0=0.0035 cam1=0.0053 cam2=0.0060] distill_by_cam[cam0=0.0028 cam1=0.0255 cam2=0.0346]
+[Stage2 15400/25000] total=0.0141 ema=0.0200 recon=0.0037 distill=0.0104 recon_enabled=1 recon_by_cam[cam0=0.0030 cam1=0.0036 cam2=0.0044] distill_by_cam[cam0=0.0022 cam1=0.0157 cam2=0.0135]
+[Stage2 15500/25000] total=0.0203 ema=0.0199 recon=0.0057 distill=0.0146 recon_enabled=1 recon_by_cam[cam0=0.0043 cam1=0.0059 cam2=0.0068] distill_by_cam[cam0=0.0026 cam1=0.0240 cam2=0.0173]
+[Stage2 15600/25000] total=0.0220 ema=0.0200 recon=0.0042 distill=0.0178 recon_enabled=1 recon_by_cam[cam0=0.0032 cam1=0.0043 cam2=0.0050] distill_by_cam[cam0=0.0028 cam1=0.0246 cam2=0.0259]
+[Stage2 15700/25000] total=0.0153 ema=0.0197 recon=0.0038 distill=0.0116 recon_enabled=1 recon_by_cam[cam0=0.0033 cam1=0.0034 cam2=0.0046] distill_by_cam[cam0=0.0025 cam1=0.0172 cam2=0.0150]
+[Stage2 15800/25000] total=0.0164 ema=0.0197 recon=0.0040 distill=0.0124 recon_enabled=1 recon_by_cam[cam0=0.0030 cam1=0.0041 cam2=0.0051] distill_by_cam[cam0=0.0033 cam1=0.0163 cam2=0.0176]
+[Stage2 15900/25000] total=0.0165 ema=0.0190 recon=0.0046 distill=0.0120 recon_enabled=1 recon_by_cam[cam0=0.0029 cam1=0.0052 cam2=0.0056] distill_by_cam[cam0=0.0024 cam1=0.0132 cam2=0.0202]
+[Stage2 16000/25000] total=0.0212 ema=0.0194 recon=0.0059 distill=0.0153 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0063 cam2=0.0077] distill_by_cam[cam0=0.0034 cam1=0.0239 cam2=0.0187]
+[Stage2 16100/25000] total=0.0262 ema=0.0200 recon=0.0061 distill=0.0201 recon_enabled=1 recon_by_cam[cam0=0.0039 cam1=0.0063 cam2=0.0079] distill_by_cam[cam0=0.0032 cam1=0.0351 cam2=0.0222]
+[Stage2 16200/25000] total=0.0157 ema=0.0197 recon=0.0037 distill=0.0120 recon_enabled=1 recon_by_cam[cam0=0.0027 cam1=0.0037 cam2=0.0047] distill_by_cam[cam0=0.0021 cam1=0.0210 cam2=0.0129]
+[Stage2 16300/25000] total=0.0224 ema=0.0202 recon=0.0062 distill=0.0163 recon_enabled=1 recon_by_cam[cam0=0.0035 cam1=0.0058 cam2=0.0091] distill_by_cam[cam0=0.0034 cam1=0.0198 cam2=0.0256]
+[Stage2 16400/25000] total=0.0238 ema=0.0195 recon=0.0051 distill=0.0187 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0052 cam2=0.0073] distill_by_cam[cam0=0.0018 cam1=0.0244 cam2=0.0298]
+[Stage2 16500/25000] total=0.0228 ema=0.0195 recon=0.0052 distill=0.0176 recon_enabled=1 recon_by_cam[cam0=0.0038 cam1=0.0054 cam2=0.0064] distill_by_cam[cam0=0.0030 cam1=0.0242 cam2=0.0256]
+[Stage2 16600/25000] total=0.0123 ema=0.0191 recon=0.0031 distill=0.0093 recon_enabled=1 recon_by_cam[cam0=0.0023 cam1=0.0030 cam2=0.0039] distill_by_cam[cam0=0.0015 cam1=0.0138 cam2=0.0126]
+[Stage2 16700/25000] total=0.0204 ema=0.0190 recon=0.0052 distill=0.0153 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0055 cam2=0.0072] distill_by_cam[cam0=0.0019 cam1=0.0190 cam2=0.0249]
+[Stage2 16800/25000] total=0.0305 ema=0.0188 recon=0.0054 distill=0.0251 recon_enabled=1 recon_by_cam[cam0=0.0039 cam1=0.0057 cam2=0.0067] distill_by_cam[cam0=0.0029 cam1=0.0331 cam2=0.0392]
+[Stage2 16900/25000] total=0.0143 ema=0.0184 recon=0.0044 distill=0.0099 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0050 cam2=0.0058] distill_by_cam[cam0=0.0022 cam1=0.0133 cam2=0.0141]
+[Stage2 17000/25000] total=0.0167 ema=0.0187 recon=0.0070 distill=0.0097 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0078 cam2=0.0096] distill_by_cam[cam0=0.0036 cam1=0.0132 cam2=0.0122]
+[Stage2 17100/25000] total=0.0128 ema=0.0197 recon=0.0033 distill=0.0095 recon_enabled=1 recon_by_cam[cam0=0.0021 cam1=0.0037 cam2=0.0041] distill_by_cam[cam0=0.0018 cam1=0.0132 cam2=0.0135]
+[Stage2 17200/25000] total=0.0168 ema=0.0190 recon=0.0046 distill=0.0122 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0054 cam2=0.0056] distill_by_cam[cam0=0.0023 cam1=0.0167 cam2=0.0176]
+[Stage2 17300/25000] total=0.0145 ema=0.0195 recon=0.0047 distill=0.0097 recon_enabled=1 recon_by_cam[cam0=0.0033 cam1=0.0047 cam2=0.0062] distill_by_cam[cam0=0.0020 cam1=0.0152 cam2=0.0121]
+[Stage2 17400/25000] total=0.0159 ema=0.0196 recon=0.0040 distill=0.0119 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0038 cam2=0.0052] distill_by_cam[cam0=0.0023 cam1=0.0149 cam2=0.0186]
+[Stage2 17500/25000] total=0.0204 ema=0.0203 recon=0.0056 distill=0.0149 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0063 cam2=0.0072] distill_by_cam[cam0=0.0029 cam1=0.0175 cam2=0.0242]
+[Stage2 17600/25000] total=0.0297 ema=0.0199 recon=0.0067 distill=0.0230 recon_enabled=1 recon_by_cam[cam0=0.0035 cam1=0.0075 cam2=0.0089] distill_by_cam[cam0=0.0026 cam1=0.0271 cam2=0.0393]
+[Stage2 17700/25000] total=0.0165 ema=0.0194 recon=0.0054 distill=0.0111 recon_enabled=1 recon_by_cam[cam0=0.0034 cam1=0.0059 cam2=0.0069] distill_by_cam[cam0=0.0020 cam1=0.0143 cam2=0.0169]
+[Stage2 17800/25000] total=0.0305 ema=0.0189 recon=0.0060 distill=0.0245 recon_enabled=1 recon_by_cam[cam0=0.0044 cam1=0.0064 cam2=0.0071] distill_by_cam[cam0=0.0026 cam1=0.0455 cam2=0.0254]
+[Stage2 17900/25000] total=0.0153 ema=0.0186 recon=0.0051 distill=0.0102 recon_enabled=1 recon_by_cam[cam0=0.0030 cam1=0.0056 cam2=0.0066] distill_by_cam[cam0=0.0020 cam1=0.0111 cam2=0.0175]
+[Stage2 18000/25000] total=0.0162 ema=0.0190 recon=0.0037 distill=0.0125 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0035 cam2=0.0049] distill_by_cam[cam0=0.0022 cam1=0.0213 cam2=0.0140]
+[Stage2 18100/25000] total=0.0147 ema=0.0188 recon=0.0041 distill=0.0106 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0046 cam2=0.0046] distill_by_cam[cam0=0.0018 cam1=0.0167 cam2=0.0133]
+[Stage2 18200/25000] total=0.0166 ema=0.0189 recon=0.0048 distill=0.0118 recon_enabled=1 recon_by_cam[cam0=0.0043 cam1=0.0045 cam2=0.0056] distill_by_cam[cam0=0.0018 cam1=0.0175 cam2=0.0161]
+[Stage2 18300/25000] total=0.0202 ema=0.0190 recon=0.0045 distill=0.0157 recon_enabled=1 recon_by_cam[cam0=0.0030 cam1=0.0046 cam2=0.0059] distill_by_cam[cam0=0.0025 cam1=0.0209 cam2=0.0237]
+[Stage2 18400/25000] total=0.0217 ema=0.0187 recon=0.0067 distill=0.0150 recon_enabled=1 recon_by_cam[cam0=0.0040 cam1=0.0069 cam2=0.0092] distill_by_cam[cam0=0.0021 cam1=0.0211 cam2=0.0219]
+[Stage2 18500/25000] total=0.0227 ema=0.0192 recon=0.0039 distill=0.0188 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0041 cam2=0.0048] distill_by_cam[cam0=0.0020 cam1=0.0323 cam2=0.0222]
+[Stage2 18600/25000] total=0.0181 ema=0.0191 recon=0.0031 distill=0.0150 recon_enabled=1 recon_by_cam[cam0=0.0027 cam1=0.0030 cam2=0.0035] distill_by_cam[cam0=0.0021 cam1=0.0275 cam2=0.0155]
+[Stage2 18700/25000] total=0.0240 ema=0.0189 recon=0.0063 distill=0.0177 recon_enabled=1 recon_by_cam[cam0=0.0032 cam1=0.0071 cam2=0.0086] distill_by_cam[cam0=0.0026 cam1=0.0233 cam2=0.0274]
+[Stage2 18800/25000] total=0.0173 ema=0.0184 recon=0.0055 distill=0.0117 recon_enabled=1 recon_by_cam[cam0=0.0034 cam1=0.0058 cam2=0.0074] distill_by_cam[cam0=0.0027 cam1=0.0157 cam2=0.0168]
+[Stage2 18900/25000] total=0.0164 ema=0.0178 recon=0.0055 distill=0.0109 recon_enabled=1 recon_by_cam[cam0=0.0036 cam1=0.0065 cam2=0.0065] distill_by_cam[cam0=0.0026 cam1=0.0165 cam2=0.0136]
+[Stage2 19000/25000] total=0.0151 ema=0.0171 recon=0.0052 distill=0.0099 recon_enabled=1 recon_by_cam[cam0=0.0033 cam1=0.0053 cam2=0.0068] distill_by_cam[cam0=0.0024 cam1=0.0139 cam2=0.0135]
+[Stage2 19100/25000] total=0.0167 ema=0.0184 recon=0.0051 distill=0.0116 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0059 cam2=0.0062] distill_by_cam[cam0=0.0024 cam1=0.0167 cam2=0.0158]
+[Stage2 19200/25000] total=0.0275 ema=0.0180 recon=0.0050 distill=0.0225 recon_enabled=1 recon_by_cam[cam0=0.0039 cam1=0.0048 cam2=0.0064] distill_by_cam[cam0=0.0027 cam1=0.0370 cam2=0.0278]
+[Stage2 19300/25000] total=0.0186 ema=0.0187 recon=0.0037 distill=0.0148 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0037 cam2=0.0046] distill_by_cam[cam0=0.0019 cam1=0.0264 cam2=0.0163]
+[Stage2 19400/25000] total=0.0131 ema=0.0176 recon=0.0045 distill=0.0086 recon_enabled=1 recon_by_cam[cam0=0.0030 cam1=0.0051 cam2=0.0054] distill_by_cam[cam0=0.0020 cam1=0.0132 cam2=0.0106]
+[Stage2 19500/25000] total=0.0177 ema=0.0182 recon=0.0039 distill=0.0138 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0040 cam2=0.0047] distill_by_cam[cam0=0.0019 cam1=0.0191 cam2=0.0203]
+[Stage2 19600/25000] total=0.0215 ema=0.0187 recon=0.0046 distill=0.0169 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0050 cam2=0.0062] distill_by_cam[cam0=0.0032 cam1=0.0250 cam2=0.0225]
+[Stage2 19700/25000] total=0.0200 ema=0.0180 recon=0.0056 distill=0.0144 recon_enabled=1 recon_by_cam[cam0=0.0027 cam1=0.0059 cam2=0.0082] distill_by_cam[cam0=0.0021 cam1=0.0177 cam2=0.0235]
+[Stage2 19800/25000] total=0.0131 ema=0.0178 recon=0.0039 distill=0.0092 recon_enabled=1 recon_by_cam[cam0=0.0035 cam1=0.0040 cam2=0.0043] distill_by_cam[cam0=0.0016 cam1=0.0141 cam2=0.0118]
+[Stage2 19900/25000] total=0.0149 ema=0.0177 recon=0.0042 distill=0.0106 recon_enabled=1 recon_by_cam[cam0=0.0023 cam1=0.0049 cam2=0.0055] distill_by_cam[cam0=0.0020 cam1=0.0134 cam2=0.0164]
+[Stage2 20000/25000] total=0.0145 ema=0.0177 recon=0.0035 distill=0.0110 recon_enabled=1 recon_by_cam[cam0=0.0024 cam1=0.0041 cam2=0.0039] distill_by_cam[cam0=0.0020 cam1=0.0159 cam2=0.0150]
+[Stage2 20100/25000] total=0.0180 ema=0.0178 recon=0.0060 distill=0.0121 recon_enabled=1 recon_by_cam[cam0=0.0034 cam1=0.0072 cam2=0.0073] distill_by_cam[cam0=0.0019 cam1=0.0150 cam2=0.0194]
+[Stage2 20200/25000] total=0.0189 ema=0.0180 recon=0.0032 distill=0.0158 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0030 cam2=0.0037] distill_by_cam[cam0=0.0015 cam1=0.0303 cam2=0.0156]
+[Stage2 20300/25000] total=0.0175 ema=0.0169 recon=0.0041 distill=0.0135 recon_enabled=1 recon_by_cam[cam0=0.0030 cam1=0.0042 cam2=0.0050] distill_by_cam[cam0=0.0018 cam1=0.0229 cam2=0.0156]
+[Stage2 20400/25000] total=0.0138 ema=0.0171 recon=0.0039 distill=0.0099 recon_enabled=1 recon_by_cam[cam0=0.0032 cam1=0.0037 cam2=0.0046] distill_by_cam[cam0=0.0018 cam1=0.0140 cam2=0.0140]
+[Stage2 20500/25000] total=0.0151 ema=0.0174 recon=0.0033 distill=0.0118 recon_enabled=1 recon_by_cam[cam0=0.0023 cam1=0.0033 cam2=0.0042] distill_by_cam[cam0=0.0025 cam1=0.0156 cam2=0.0173]
+[Stage2 20600/25000] total=0.0205 ema=0.0169 recon=0.0051 distill=0.0154 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0056 cam2=0.0056] distill_by_cam[cam0=0.0029 cam1=0.0225 cam2=0.0209]
+[Stage2 20700/25000] total=0.0152 ema=0.0173 recon=0.0036 distill=0.0116 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0034 cam2=0.0042] distill_by_cam[cam0=0.0019 cam1=0.0163 cam2=0.0166]
+[Stage2 20800/25000] total=0.0154 ema=0.0169 recon=0.0040 distill=0.0114 recon_enabled=1 recon_by_cam[cam0=0.0030 cam1=0.0041 cam2=0.0049] distill_by_cam[cam0=0.0023 cam1=0.0130 cam2=0.0189]
+[Stage2 20900/25000] total=0.0186 ema=0.0166 recon=0.0055 distill=0.0130 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0055 cam2=0.0071] distill_by_cam[cam0=0.0024 cam1=0.0154 cam2=0.0213]
+[Stage2 21000/25000] total=0.0185 ema=0.0165 recon=0.0058 distill=0.0127 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0066 cam2=0.0079] distill_by_cam[cam0=0.0019 cam1=0.0185 cam2=0.0176]
+[Stage2 21100/25000] total=0.0194 ema=0.0172 recon=0.0037 distill=0.0157 recon_enabled=1 recon_by_cam[cam0=0.0023 cam1=0.0037 cam2=0.0051] distill_by_cam[cam0=0.0015 cam1=0.0274 cam2=0.0182]
+[Stage2 21200/25000] total=0.0174 ema=0.0172 recon=0.0056 distill=0.0119 recon_enabled=1 recon_by_cam[cam0=0.0033 cam1=0.0062 cam2=0.0072] distill_by_cam[cam0=0.0019 cam1=0.0156 cam2=0.0180]
+[Stage2 21300/25000] total=0.0182 ema=0.0176 recon=0.0049 distill=0.0134 recon_enabled=1 recon_by_cam[cam0=0.0041 cam1=0.0044 cam2=0.0061] distill_by_cam[cam0=0.0017 cam1=0.0146 cam2=0.0238]
+[Stage2 21400/25000] total=0.0208 ema=0.0173 recon=0.0052 distill=0.0156 recon_enabled=1 recon_by_cam[cam0=0.0032 cam1=0.0056 cam2=0.0068] distill_by_cam[cam0=0.0020 cam1=0.0164 cam2=0.0284]
+[Stage2 21500/25000] total=0.0143 ema=0.0171 recon=0.0043 distill=0.0099 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0043 cam2=0.0059] distill_by_cam[cam0=0.0016 cam1=0.0105 cam2=0.0177]
+[Stage2 21600/25000] total=0.0135 ema=0.0170 recon=0.0031 distill=0.0104 recon_enabled=1 recon_by_cam[cam0=0.0024 cam1=0.0030 cam2=0.0040] distill_by_cam[cam0=0.0019 cam1=0.0135 cam2=0.0156]
+[Stage2 21700/25000] total=0.0154 ema=0.0176 recon=0.0060 distill=0.0094 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0071 cam2=0.0082] distill_by_cam[cam0=0.0019 cam1=0.0134 cam2=0.0129]
+[Stage2 21800/25000] total=0.0349 ema=0.0181 recon=0.0065 distill=0.0284 recon_enabled=1 recon_by_cam[cam0=0.0037 cam1=0.0075 cam2=0.0083] distill_by_cam[cam0=0.0041 cam1=0.0396 cam2=0.0415]
+[Stage2 21900/25000] total=0.0194 ema=0.0174 recon=0.0060 distill=0.0134 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0062 cam2=0.0089] distill_by_cam[cam0=0.0021 cam1=0.0183 cam2=0.0198]
+[Stage2 22000/25000] total=0.0132 ema=0.0168 recon=0.0050 distill=0.0083 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0053 cam2=0.0070] distill_by_cam[cam0=0.0018 cam1=0.0097 cam2=0.0133]
+[Stage2 22100/25000] total=0.0126 ema=0.0167 recon=0.0052 distill=0.0074 recon_enabled=1 recon_by_cam[cam0=0.0031 cam1=0.0051 cam2=0.0075] distill_by_cam[cam0=0.0020 cam1=0.0089 cam2=0.0113]
+[Stage2 22200/25000] total=0.0155 ema=0.0164 recon=0.0035 distill=0.0120 recon_enabled=1 recon_by_cam[cam0=0.0029 cam1=0.0034 cam2=0.0041] distill_by_cam[cam0=0.0014 cam1=0.0140 cam2=0.0208]
+[Stage2 22300/25000] total=0.0232 ema=0.0168 recon=0.0064 distill=0.0169 recon_enabled=1 recon_by_cam[cam0=0.0038 cam1=0.0071 cam2=0.0082] distill_by_cam[cam0=0.0018 cam1=0.0205 cam2=0.0282]
+[Stage2 22400/25000] total=0.0138 ema=0.0169 recon=0.0038 distill=0.0100 recon_enabled=1 recon_by_cam[cam0=0.0024 cam1=0.0042 cam2=0.0046] distill_by_cam[cam0=0.0022 cam1=0.0136 cam2=0.0142]
+[Stage2 22500/25000] total=0.0118 ema=0.0174 recon=0.0040 distill=0.0077 recon_enabled=1 recon_by_cam[cam0=0.0027 cam1=0.0041 cam2=0.0053] distill_by_cam[cam0=0.0018 cam1=0.0093 cam2=0.0120]
+[Stage2 22600/25000] total=0.0148 ema=0.0172 recon=0.0037 distill=0.0111 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0035 cam2=0.0050] distill_by_cam[cam0=0.0017 cam1=0.0173 cam2=0.0143]
+[Stage2 22700/25000] total=0.0164 ema=0.0169 recon=0.0031 distill=0.0133 recon_enabled=1 recon_by_cam[cam0=0.0024 cam1=0.0032 cam2=0.0037] distill_by_cam[cam0=0.0022 cam1=0.0222 cam2=0.0155]
+[Stage2 22800/25000] total=0.0122 ema=0.0168 recon=0.0036 distill=0.0085 recon_enabled=1 recon_by_cam[cam0=0.0027 cam1=0.0036 cam2=0.0046] distill_by_cam[cam0=0.0013 cam1=0.0098 cam2=0.0144]
+[Stage2 22900/25000] total=0.0152 ema=0.0160 recon=0.0047 distill=0.0104 recon_enabled=1 recon_by_cam[cam0=0.0027 cam1=0.0054 cam2=0.0061] distill_by_cam[cam0=0.0018 cam1=0.0137 cam2=0.0159]
+[Stage2 23000/25000] total=0.0114 ema=0.0156 recon=0.0032 distill=0.0082 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0032 cam2=0.0039] distill_by_cam[cam0=0.0015 cam1=0.0092 cam2=0.0140]
+[Stage2 23100/25000] total=0.0125 ema=0.0160 recon=0.0042 distill=0.0083 recon_enabled=1 recon_by_cam[cam0=0.0024 cam1=0.0047 cam2=0.0055] distill_by_cam[cam0=0.0011 cam1=0.0120 cam2=0.0117]
+[Stage2 23200/25000] total=0.0137 ema=0.0164 recon=0.0032 distill=0.0105 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0029 cam2=0.0038] distill_by_cam[cam0=0.0015 cam1=0.0192 cam2=0.0108]
+[Stage2 23300/25000] total=0.0221 ema=0.0164 recon=0.0053 distill=0.0168 recon_enabled=1 recon_by_cam[cam0=0.0045 cam1=0.0047 cam2=0.0067] distill_by_cam[cam0=0.0026 cam1=0.0239 cam2=0.0240]
+[Stage2 23400/25000] total=0.0115 ema=0.0157 recon=0.0030 distill=0.0084 recon_enabled=1 recon_by_cam[cam0=0.0020 cam1=0.0034 cam2=0.0037] distill_by_cam[cam0=0.0014 cam1=0.0141 cam2=0.0099]
+[Stage2 23500/25000] total=0.0128 ema=0.0165 recon=0.0028 distill=0.0100 recon_enabled=1 recon_by_cam[cam0=0.0020 cam1=0.0029 cam2=0.0036] distill_by_cam[cam0=0.0016 cam1=0.0107 cam2=0.0179]
+[Stage2 23600/25000] total=0.0138 ema=0.0161 recon=0.0036 distill=0.0102 recon_enabled=1 recon_by_cam[cam0=0.0025 cam1=0.0036 cam2=0.0046] distill_by_cam[cam0=0.0015 cam1=0.0185 cam2=0.0107]
+[Stage2 23700/25000] total=0.0188 ema=0.0159 recon=0.0050 distill=0.0139 recon_enabled=1 recon_by_cam[cam0=0.0029 cam1=0.0050 cam2=0.0069] distill_by_cam[cam0=0.0030 cam1=0.0160 cam2=0.0226]
+[Stage2 23800/25000] total=0.0160 ema=0.0157 recon=0.0031 distill=0.0129 recon_enabled=1 recon_by_cam[cam0=0.0026 cam1=0.0031 cam2=0.0036] distill_by_cam[cam0=0.0016 cam1=0.0209 cam2=0.0163]
+[Stage2 23900/25000] total=0.0125 ema=0.0159 recon=0.0035 distill=0.0090 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0035 cam2=0.0044] distill_by_cam[cam0=0.0016 cam1=0.0112 cam2=0.0141]
+[Stage2 24000/25000] total=0.0171 ema=0.0168 recon=0.0039 distill=0.0133 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0040 cam2=0.0048] distill_by_cam[cam0=0.0033 cam1=0.0176 cam2=0.0189]
+[Stage2 24100/25000] total=0.0190 ema=0.0160 recon=0.0047 distill=0.0143 recon_enabled=1 recon_by_cam[cam0=0.0032 cam1=0.0052 cam2=0.0058] distill_by_cam[cam0=0.0020 cam1=0.0261 cam2=0.0147]
+[Stage2 24200/25000] total=0.0182 ema=0.0160 recon=0.0049 distill=0.0133 recon_enabled=1 recon_by_cam[cam0=0.0029 cam1=0.0045 cam2=0.0073] distill_by_cam[cam0=0.0021 cam1=0.0150 cam2=0.0227]
+[Stage2 24300/25000] total=0.0117 ema=0.0151 recon=0.0033 distill=0.0083 recon_enabled=1 recon_by_cam[cam0=0.0025 cam1=0.0034 cam2=0.0042] distill_by_cam[cam0=0.0014 cam1=0.0106 cam2=0.0130]
+[Stage2 24400/25000] total=0.0146 ema=0.0151 recon=0.0041 distill=0.0105 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0042 cam2=0.0053] distill_by_cam[cam0=0.0018 cam1=0.0161 cam2=0.0135]
+[Stage2 24500/25000] total=0.0147 ema=0.0155 recon=0.0057 distill=0.0089 recon_enabled=1 recon_by_cam[cam0=0.0025 cam1=0.0072 cam2=0.0075] distill_by_cam[cam0=0.0017 cam1=0.0136 cam2=0.0115]
+[Stage2 24600/25000] total=0.0272 ema=0.0164 recon=0.0060 distill=0.0212 recon_enabled=1 recon_by_cam[cam0=0.0034 cam1=0.0062 cam2=0.0083] distill_by_cam[cam0=0.0027 cam1=0.0343 cam2=0.0267]
+[Stage2 24700/25000] total=0.0097 ema=0.0167 recon=0.0032 distill=0.0065 recon_enabled=1 recon_by_cam[cam0=0.0019 cam1=0.0039 cam2=0.0038] distill_by_cam[cam0=0.0012 cam1=0.0089 cam2=0.0094]
+[Stage2 24800/25000] total=0.0126 ema=0.0161 recon=0.0034 distill=0.0092 recon_enabled=1 recon_by_cam[cam0=0.0025 cam1=0.0035 cam2=0.0042] distill_by_cam[cam0=0.0018 cam1=0.0150 cam2=0.0108]
+[Stage2 24900/25000] total=0.0134 ema=0.0166 recon=0.0032 distill=0.0101 recon_enabled=1 recon_by_cam[cam0=0.0025 cam1=0.0033 cam2=0.0039] distill_by_cam[cam0=0.0018 cam1=0.0154 cam2=0.0132]
+[Stage2 25000/25000] total=0.0145 ema=0.0164 recon=0.0038 distill=0.0107 recon_enabled=1 recon_by_cam[cam0=0.0028 cam1=0.0038 cam2=0.0050] distill_by_cam[cam0=0.0015 cam1=0.0188 cam2=0.0118]
+[Stage2] saved student weights to /home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs/distill_20260329_173506/vtmae_distill_50000.pt
+
+Exit code: 0

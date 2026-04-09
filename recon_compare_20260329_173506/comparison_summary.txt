@@ -1,0 +1,19 @@
+[keep_cam0_cam1_cam2]
+joint: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+distill: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+curriculum: total=0.000000 v0=0.000000 v1=0.000000 v2=0.000000 z_cos_to_full=1.000000 z_mse_to_full=0.000000
+
+[keep_cam0]
+curriculum: total=0.002744 v0=0.000000 v1=0.004065 v2=0.001423 z_cos_to_full=0.999889 z_mse_to_full=0.000734
+joint: total=0.002981 v0=0.000000 v1=0.003989 v2=0.001973 z_cos_to_full=0.999969 z_mse_to_full=0.000046
+distill: total=0.004854 v0=0.000000 v1=0.005457 v2=0.004251 z_cos_to_full=0.972703 z_mse_to_full=0.045016
+
+[keep_cam1]
+joint: total=0.001105 v0=0.001279 v1=0.000000 v2=0.000931 z_cos_to_full=0.999952 z_mse_to_full=0.000071
+curriculum: total=0.001718 v0=0.001750 v1=0.000000 v2=0.001686 z_cos_to_full=0.999893 z_mse_to_full=0.000680
+distill: total=0.005722 v0=0.003225 v1=0.000000 v2=0.008220 z_cos_to_full=0.973093 z_mse_to_full=0.044518
+
+[keep_cam2]
+joint: total=0.002052 v0=0.001860 v1=0.002245 v2=0.000000 z_cos_to_full=0.999976 z_mse_to_full=0.000036
+curriculum: total=0.002306 v0=0.001399 v1=0.003214 v2=0.000000 z_cos_to_full=0.999838 z_mse_to_full=0.000748
+distill: total=0.008556 v0=0.005180 v1=0.011932 v2=0.000000 z_cos_to_full=0.969135 z_mse_to_full=0.051032

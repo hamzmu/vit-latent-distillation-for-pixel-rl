@@ -1,0 +1,13 @@
+subset,method,total,v0,v1,v2,z_cos_to_full,z_mse_to_full,checkpoint
+keep_cam0_cam1_cam2,joint_decoder_frozen,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_decoder_frozen_20260404_002915/vtmae_joint_decoder_frozen_50000.pt
+keep_cam0_cam1_cam2,joint_single_recon_up,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_single_recon_w1p5_20260404_002915/vtmae_joint_single_recon_w1p5_50000.pt
+keep_cam0_cam1_cam2,joint_distill_mse,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_distill_mse_20260404_002915/vtmae_joint_distill_mse_50000.pt
+keep_cam0,joint_single_recon_up,0.003623,0.000000,0.001804,0.005442,0.999940,0.000085,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_single_recon_w1p5_20260404_002915/vtmae_joint_single_recon_w1p5_50000.pt
+keep_cam0,joint_distill_mse,0.003816,0.000000,0.002120,0.005512,0.999453,0.000423,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_distill_mse_20260404_002915/vtmae_joint_distill_mse_50000.pt
+keep_cam0,joint_decoder_frozen,0.008420,0.000000,0.009445,0.007395,0.997471,0.003800,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_decoder_frozen_20260404_002915/vtmae_joint_decoder_frozen_50000.pt
+keep_cam1,joint_single_recon_up,0.001878,0.001910,0.000000,0.001846,0.999911,0.000126,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_single_recon_w1p5_20260404_002915/vtmae_joint_single_recon_w1p5_50000.pt
+keep_cam1,joint_distill_mse,0.002147,0.001674,0.000000,0.002621,0.999944,0.000044,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_distill_mse_20260404_002915/vtmae_joint_distill_mse_50000.pt
+keep_cam1,joint_decoder_frozen,0.006840,0.004441,0.000000,0.009239,0.999873,0.000191,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_decoder_frozen_20260404_002915/vtmae_joint_decoder_frozen_50000.pt
+keep_cam2,joint_distill_mse,0.002422,0.002135,0.002709,0.000000,0.999975,0.000019,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_distill_mse_20260404_002915/vtmae_joint_distill_mse_50000.pt
+keep_cam2,joint_single_recon_up,0.003789,0.001933,0.005645,0.000000,0.999935,0.000092,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_single_recon_w1p5_20260404_002915/vtmae_joint_single_recon_w1p5_50000.pt
+keep_cam2,joint_decoder_frozen,0.010457,0.008005,0.012908,0.000000,0.999899,0.000152,/home/medcvr/Desktop/hamza/multicam-vit/MultiModalViT/seq_runs2/joint_decoder_frozen_20260404_002915/vtmae_joint_decoder_frozen_50000.pt

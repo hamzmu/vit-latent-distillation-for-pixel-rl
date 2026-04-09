@@ -1,38 +1,37 @@
 # =========================
 # pretrain_models.py
-# (NO segmentation anywhere)
 # ViT-only (NO CNN anywhere)
+# 3-view masked autoencoder with dynamic per-sample view subsets
 # =========================
 from __future__ import annotations
 
-from vit_pytorch.vit import pair, Transformer
+from typing import Dict, List
+
 import torch
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
+from vit_pytorch.vit import Transformer, pair
 from einops.layers.torch import Rearrange
 from positional_encodings.torch_encodings import PositionalEncoding2D
 
 
-class VST(nn.Module):
+class MultiViewVST(nn.Module):
     """
-    Two-stream ViT encoder scaffold:
-      - primary image stream (required)
-      - auxiliary image stream (optional; e.g., second camera)
+    Shared-patch-embedding ViT encoder for fixed multi-view RGB input.
+    Designed for exactly 3 cameras by default, but supports any num_views >= 1.
     """
 
     def __init__(
         self,
         *,
         image_size,
-        aux_size,
-        image_patch_size,
-        aux_patch_size,
+        patch_size,
         dim,
         depth,
         heads,
         mlp_dim,
-        image_channels: int = 3,
-        aux_channels: int = 3,
+        channels: int = 3,
+        num_views: int = 3,
         dim_head: int = 64,
         dropout: float = 0.0,
         emb_dropout: float = 0.0,
@@ -41,301 +40,484 @@ class VST(nn.Module):
         super().__init__()
 
         image_height, image_width = pair(image_size)
-        aux_height, aux_width = pair(aux_size)
-        image_patch_height, image_patch_width = pair(image_patch_size)
-        aux_patch_height, aux_patch_width = pair(aux_patch_size)
+        patch_height, patch_width = pair(patch_size)
 
-        # sizes
+        assert image_height % patch_height == 0 and image_width % patch_width == 0, (
+            "Image dimensions must be divisible by patch size."
+        )
+        assert num_views >= 1, "num_views must be >= 1"
+
+        # Keep these attribute names for compatibility with existing scripts.
         self.image_height = image_height
         self.image_width = image_width
-        self.aux_height = aux_height
-        self.aux_width = aux_width
-
-        # patch sizes
-        self.image_patch_height = image_patch_height
-        self.image_patch_width = image_patch_width
-        self.aux_patch_height = aux_patch_height
-        self.aux_patch_width = aux_patch_width
-
-        self.image_channels = image_channels
-        self.aux_channels = aux_channels
+        self.image_patch_height = patch_height
+        self.image_patch_width = patch_width
+        self.image_channels = channels
         self.frame_stack = frame_stack
+        self.num_views = num_views
 
-        assert image_height % image_patch_height == 0 and image_width % image_patch_width == 0, \
-            "Image dimensions must be divisible by the patch size."
-        assert aux_height % aux_patch_height == 0 and aux_width % aux_patch_width == 0, \
-            "Aux dimensions must be divisible by the patch size."
+        self.num_patches_per_view = (image_height // patch_height) * (image_width // patch_width)
+        patch_dim = channels * patch_height * patch_width
 
-        # counts (for pos_embed shape only)
-        num_patches_image = (image_height // image_patch_height) * (image_width // image_patch_width)
-        num_patches_aux = (aux_height // aux_patch_height) * (aux_width // aux_patch_width)
-        num_patches = num_patches_image + num_patches_aux
-
-        image_patch_dim = image_channels * image_patch_height * image_patch_width
-        aux_patch_dim = aux_channels * aux_patch_height * aux_patch_width
-
-        # patch embeddings -> token dim
-        self.image_to_patch_embedding = nn.Sequential(
-            Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=image_patch_height, p2=image_patch_width),
-            nn.LayerNorm(image_patch_dim),
-            nn.Linear(image_patch_dim, dim),
-            nn.LayerNorm(dim),
+        # Shared patch embedding across all views.
+        self.to_patch = Rearrange(
+            "b c (h p1) (w p2) -> b (h w) (p1 p2 c)",
+            p1=patch_height,
+            p2=patch_width,
         )
-        self.aux_to_patch_embedding = nn.Sequential(
-            Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=aux_patch_height, p2=aux_patch_width),
-            nn.LayerNorm(aux_patch_dim),
-            nn.Linear(aux_patch_dim, dim),
+        self.patch_to_embedding = nn.Sequential(
+            nn.LayerNorm(patch_dim),
+            nn.Linear(patch_dim, dim),
             nn.LayerNorm(dim),
         )
 
-        # kept for shape introspection elsewhere
-        self.pos_embedding = nn.Parameter(torch.randn(1, num_patches + 1, dim))
+        # Kept for shape introspection with existing utilities.
+        self.pos_embedding = nn.Parameter(torch.randn(1, self.num_patches_per_view + 1, dim))
 
         self.dropout = nn.Dropout(emb_dropout)
         self.transformer = Transformer(dim, depth, heads, dim_head, mlp_dim, dropout)
         self.to_latent = nn.Identity()
 
+    def patchify_views(self, views: torch.Tensor) -> torch.Tensor:
+        """
+        views: [B, V, C, H, W] -> patches: [B, V, N, P]
+        """
+        assert views.ndim == 5, f"Expected [B,V,C,H,W], got {tuple(views.shape)}"
+        B, V, C, H, W = views.shape
+        assert V == self.num_views, f"Expected V={self.num_views}, got {V}"
+        assert C == self.image_channels, f"Expected C={self.image_channels}, got {C}"
+        assert (H, W) == (self.image_height, self.image_width), (
+            f"Expected spatial {(self.image_height, self.image_width)}, got {(H, W)}"
+        )
 
-class VSMAE(nn.Module):
+        flat = views.reshape(B * V, C, H, W)
+        patches = self.to_patch(flat)
+        return patches.reshape(B, V, self.num_patches_per_view, -1)
+
+    def embed_view_patches(self, patches: torch.Tensor) -> torch.Tensor:
+        """
+        patches: [B, V, N, P] -> tokens: [B, V, N, D]
+        """
+        B, V, N, P = patches.shape
+        tokens = self.patch_to_embedding(patches.reshape(B * V * N, P)).reshape(B, V, N, -1)
+        return tokens
+
+    def embed_views(self, views: torch.Tensor) -> torch.Tensor:
+        patches = self.patchify_views(views)
+        return self.embed_view_patches(patches)
+
+
+class MultiViewVSMAE(nn.Module):
     """
-    Vision + Aux-Image MAE with separate randomized masking per modality.
-    ViT-only tokenization (patch embedding) — NO CNN.
-    - image is REQUIRED (x["image"])
-    - aux image is OPTIONAL (x.get("image_aux"))
-    Both streams reconstruct with MSE on raw patch pixels.
+    Multi-view ViT MAE with dynamic per-sample view visibility and mask ratios.
+
+    Forward expects:
+      views: [B, V, C, H, W]
+      visible_views: [B, V] bool  (dropped views have no encoder tokens)
+      mask_ratios: [B, V] float in [0,1]
+
+    Reconstruction always predicts all views for all patches; loss is computed only
+    on masked patches, where dropped views are fully masked by construction.
     """
 
     def __init__(
         self,
         *,
-        encoder: VST,
+        encoder: MultiViewVST,
         decoder_dim: int,
-        masking_ratio_a: float = 0.75,
-        masking_ratio_b: float = 0.75,
         decoder_depth: int = 1,
         decoder_heads: int = 8,
         decoder_dim_head: int = 64,
+        num_views: int = 3,
         use_sincosmod_encodings: bool = True,
         frame_stack: int = 1,
-        auxloss_multiplier: float = 1.0,
     ):
         super().__init__()
-        self.masking_ratio_a = masking_ratio_a
-        self.masking_ratio_b = masking_ratio_b
 
-        self.auxloss_multiplier = auxloss_multiplier
+        assert num_views == encoder.num_views, (
+            f"encoder.num_views ({encoder.num_views}) must match num_views ({num_views})"
+        )
+
+        self.encoder: MultiViewVST = encoder
+        self.encoder_dim = encoder.pos_embedding.shape[-1]
+        self.decoder_dim = decoder_dim
+        self.num_views = num_views
         self.frame_stack = frame_stack
         self.use_sincosmod_encodings = use_sincosmod_encodings
 
-        # encoder (ViT)
-        self.encoder: VST = encoder
-        _, encoder_dim = encoder.pos_embedding.shape[-2:]
-        self.encoder_dim = encoder_dim
-        self.decoder_dim = decoder_dim
+        self.patch_height = self.encoder.image_patch_height
+        self.patch_width = self.encoder.image_patch_width
+        self.image_height = self.encoder.image_height
+        self.image_width = self.encoder.image_width
+        self.channels = self.encoder.image_channels
+        self.num_patches_per_view = self.encoder.num_patches_per_view
 
-        # patch grids
-        Hp = self.encoder.image_height // self.encoder.image_patch_height
-        Wp = self.encoder.image_width // self.encoder.image_patch_width
-        Ha = self.encoder.aux_height // self.encoder.aux_patch_height
-        Wa = self.encoder.aux_width // self.encoder.aux_patch_width
-        self.Hp, self.Wp = Hp, Wp
-        self.Ha, self.Wa = Ha, Wa
+        # Shared patchify from encoder.
+        self.to_patch = self.encoder.to_patch
+        patch_dim = self.channels * self.patch_height * self.patch_width
 
-        print("VT-MAE: ViT-only patch tokeniser — aux optional (NO CNN)")
-
-        # retain patchify (raw pixels) + get pixel dim per patch from Linear weight
-        self.image_to_patch = encoder.image_to_patch_embedding[0]  # Rearrange only (raw pixels per patch)
-        pixel_values_per_patch = encoder.image_to_patch_embedding[2].weight.shape[-1]  # patch_dim
-
-        self.aux_to_patch = encoder.aux_to_patch_embedding[0]
-        aux_values_per_patch = encoder.aux_to_patch_embedding[2].weight.shape[-1]
-
-        # full token embeddings (raw patch -> D)
-        self.image_patch_embed = encoder.image_to_patch_embedding
-        self.aux_patch_embed = encoder.aux_to_patch_embedding
-
-        # decoder + projections
-        self.enc_to_dec = nn.Linear(encoder_dim, decoder_dim) if encoder_dim != decoder_dim else nn.Identity()
+        self.enc_to_dec = nn.Linear(self.encoder_dim, decoder_dim) if self.encoder_dim != decoder_dim else nn.Identity()
         self.mask_token = nn.Parameter(torch.randn(decoder_dim))
         self.decoder = Transformer(decoder_dim, decoder_depth, decoder_heads, decoder_dim_head, decoder_dim * 4)
 
-        # heads (both are pixel regression heads)
-        self.to_pixels = nn.Linear(decoder_dim, pixel_values_per_patch)
-        self.to_aux_pixels = nn.Linear(decoder_dim, aux_values_per_patch)
+        # ModuleList keeps per-view heads explicit and extensible.
+        self.to_view_pixels = nn.ModuleList([nn.Linear(decoder_dim, patch_dim) for _ in range(num_views)])
 
-        # fixed 2D sin-cos encodings on patch grids
-        enc_pe2d = PositionalEncoding2D(encoder_dim)
+        # Fixed 2D positional encodings on the patch grid.
+        Hp = self.image_height // self.patch_height
+        Wp = self.image_width // self.patch_width
+
+        enc_pe2d = PositionalEncoding2D(self.encoder_dim)
         dec_pe2d = PositionalEncoding2D(decoder_dim)
 
-        img_pe_enc = enc_pe2d(torch.zeros(1, Hp, Wp, encoder_dim)).flatten(1, 2)  # [1, Hp*Wp, D]
-        aux_pe_enc = enc_pe2d(torch.zeros(1, Ha, Wa, encoder_dim)).flatten(1, 2)  # [1, Ha*Wa, D]
+        patch_enc = enc_pe2d(torch.zeros(1, Hp, Wp, self.encoder_dim)).flatten(1, 2)  # [1,N,D]
+        patch_dec = dec_pe2d(torch.zeros(1, Hp, Wp, decoder_dim)).flatten(1, 2)        # [1,N,Dd]
+        self.register_buffer("patch_enc_pos_embedding", patch_enc)
+        self.register_buffer("patch_dec_pos_embedding", patch_dec)
 
-        img_pe_dec = dec_pe2d(torch.zeros(1, Hp, Wp, decoder_dim)).flatten(1, 2)  # [1, Hp*Wp, Dd]
-        aux_pe_dec = dec_pe2d(torch.zeros(1, Ha, Wa, decoder_dim)).flatten(1, 2)  # [1, Ha*Wa, Dd]
+        # Learned camera-ID embeddings.
+        self.encoder_camera_embedding = nn.Embedding(num_views, self.encoder_dim)
+        self.decoder_camera_embedding = nn.Embedding(num_views, self.decoder_dim)
 
-        self.register_buffer("image_enc_pos_embedding", img_pe_enc)
-        self.register_buffer("aux_enc_pos_embedding", aux_pe_enc)
-        self.register_buffer("image_dec_pos_embedding", img_pe_dec)
-        self.register_buffer("aux_dec_pos_embedding", aux_pe_dec)
-
-        # modality embeddings: 0=image, 1=aux
-        self.encoder_modality_embedding = nn.Embedding(2, encoder_dim)
-        self.decoder_modality_embedding = nn.Embedding(2, decoder_dim)
-
-        # projection on pooled rep (for get_embeddings)
         self.repr_ln = nn.LayerNorm(self.encoder_dim)
 
-    # -------------- token helpers (ViT-only) --------------
-    def _tokens_from_image(self, x_img: torch.Tensor, B: int, device: torch.device, use_vision: bool) -> torch.Tensor:
-        if not use_vision:
-            return torch.zeros((B, 0, self.encoder_dim), device=device)
-        return self.image_patch_embed(x_img)  # [B, Hp*Wp, D]
+        print("VT-MAE: Multi-view ViT patch tokeniser (3-view dynamic masking)")
 
-    def _tokens_from_aux_optional(
+    def _validate_inputs(
         self,
-        x_aux: torch.Tensor | None,
-        B: int,
-        device: torch.device,
-        use_aux: bool,
-    ) -> torch.Tensor:
-        if (not use_aux) or (x_aux is None):
-            return torch.zeros((B, 0, self.encoder_dim), device=device)
-        return self.aux_patch_embed(x_aux)  # [B, Ha*Wa, D]
+        views: torch.Tensor,
+        visible_views: torch.Tensor | None,
+        mask_ratios: torch.Tensor | None,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        assert views.ndim == 5, f"Expected [B,V,C,H,W], got {tuple(views.shape)}"
+        B, V, C, H, W = views.shape
+        assert V == self.num_views, f"Expected V={self.num_views}, got V={V}"
+        assert C == self.channels, f"Expected channels={self.channels}, got channels={C}"
+        assert (H, W) == (self.image_height, self.image_width), (
+            f"Expected {(self.image_height, self.image_width)}, got {(H, W)}"
+        )
 
-    def forward(self, x: dict, *, use_vision: bool = True, use_aux: bool = True, **kwargs):
+        device = views.device
+
+        if visible_views is None:
+            visible_views = torch.ones((B, V), dtype=torch.bool, device=device)
+        else:
+            visible_views = visible_views.to(device=device, dtype=torch.bool)
+            assert visible_views.shape == (B, V), (
+                f"visible_views must be [B,V], got {tuple(visible_views.shape)}"
+            )
+
+        # Every sample must keep at least one visible camera.
+        assert bool((visible_views.sum(dim=1) >= 1).all()), "Each sample must have at least one visible camera."
+
+        if mask_ratios is None:
+            mask_ratios = torch.full((B, V), 0.75, device=device, dtype=views.dtype)
+            mask_ratios = torch.where(visible_views, mask_ratios, torch.ones_like(mask_ratios))
+        else:
+            mask_ratios = mask_ratios.to(device=device, dtype=views.dtype)
+            assert mask_ratios.shape == (B, V), f"mask_ratios must be [B,V], got {tuple(mask_ratios.shape)}"
+
+        mask_ratios = mask_ratios.clamp(0.0, 1.0)
+        # Dropped views are always fully masked.
+        mask_ratios = torch.where(visible_views, mask_ratios, torch.ones_like(mask_ratios))
+
+        return views, visible_views, mask_ratios
+
+    def _add_encodings(self, tokens: torch.Tensor) -> torch.Tensor:
         """
-        Expected x:
-          x["image"]:      [B, Ci, H, W]
-          x["image_aux"]:  [B, Ca, Ha, Wa] (optional)
+        tokens: [B,V,N,D] -> [B,V,N,D] with camera + position encodings.
         """
-        assert "image" in x, "Image input is required."
-        device = x["image"].device
-        B = x["image"].shape[0]
-
-        x_aux = x.get("image_aux", None)
-        use_aux = bool(use_aux and (x_aux is not None) and isinstance(x_aux, torch.Tensor) and x_aux.numel() > 0)
-
-        # raw patch targets (pixels)
-        img_patch_dim = self.encoder.image_channels * self.encoder.image_patch_height * self.encoder.image_patch_width
-        aux_patch_dim = self.encoder.aux_channels * self.encoder.aux_patch_height * self.encoder.aux_patch_width
-
-        img_patches = self.image_to_patch(x["image"]) if use_vision else torch.zeros((B, 0, img_patch_dim), device=device)
-        Ni = img_patches.shape[1]
-
-        if use_aux:
-            aux_patches = self.aux_to_patch(x_aux)
-            Na = aux_patches.shape[1]
-        else:
-            aux_patches = torch.zeros((B, 0, aux_patch_dim), device=device)
-            Na = 0
-
-        # token embeddings (ViT patch embedding)
-        img_tok = self._tokens_from_image(x["image"], B, device, use_vision)
-        aux_tok = self._tokens_from_aux_optional(x_aux, B, device, use_aux)
-
-        if self.use_sincosmod_encodings and img_tok.shape[1] > 0:
-            img_tok = img_tok + self.encoder_modality_embedding.weight[0] + self.image_enc_pos_embedding
-        if self.use_sincosmod_encodings and aux_tok.shape[1] > 0:
-            aux_tok = aux_tok + self.encoder_modality_embedding.weight[1] + self.aux_enc_pos_embedding
-
-        tokens = torch.cat([img_tok, aux_tok], dim=1)  # [B, Ni+Na, D]
-        Nt = tokens.shape[1]
-
-        # independent masking per modality
-        if Ni > 0:
-            n_mask_img = int(self.masking_ratio_a * Ni)
-            perm_img = torch.rand(B, Ni, device=device).argsort(dim=-1)
-            m_idx_img = perm_img[:, :n_mask_img]
-            u_idx_img = perm_img[:, n_mask_img:]
-        else:
-            m_idx_img = torch.zeros((B, 0), dtype=torch.long, device=device)
-            u_idx_img = torch.zeros((B, 0), dtype=torch.long, device=device)
-
-        if Na > 0:
-            n_mask_aux = int(self.masking_ratio_b * Na)
-            perm_aux = torch.rand(B, Na, device=device).argsort(dim=-1)
-            m_idx_aux = perm_aux[:, :n_mask_aux]
-            u_idx_aux = perm_aux[:, n_mask_aux:]
-        else:
-            m_idx_aux = torch.zeros((B, 0), dtype=torch.long, device=device)
-            u_idx_aux = torch.zeros((B, 0), dtype=torch.long, device=device)
-
-        u_idx = torch.cat([u_idx_img, u_idx_aux + Ni], dim=1)
-        m_idx = torch.cat([m_idx_img, m_idx_aux + Ni], dim=1)
-        batch_range = torch.arange(B, device=device)[:, None]
-
-        enc_in = tokens[batch_range, u_idx]        # [B, Nu, D]
-        enc_out = self.encoder.transformer(enc_in) # [B, Nu, D]
-        dec_tok = self.enc_to_dec(enc_out)         # [B, Nu, Dd]
-
-        dec_tokens = torch.zeros(B, Nt, self.decoder_dim, device=device)
-        dec_tokens[batch_range, u_idx] = dec_tok
-        dec_tokens[batch_range, m_idx] = self.mask_token
-
+        B, V, N, D = tokens.shape
+        out = tokens
         if self.use_sincosmod_encodings:
-            if Ni > 0:
-                dec_tokens[:, :Ni] += self.decoder_modality_embedding.weight[0]
-                dec_tokens[:, :Ni] += self.image_dec_pos_embedding
-            if Na > 0:
-                dec_tokens[:, Ni:] += self.decoder_modality_embedding.weight[1]
-                dec_tokens[:, Ni:] += self.aux_dec_pos_embedding
+            cam_ids = torch.arange(V, device=tokens.device)
+            cam_embed = self.encoder_camera_embedding(cam_ids).view(1, V, 1, D)
+            pos_embed = self.patch_enc_pos_embedding[:, :N, :].view(1, 1, N, D)
+            out = out + cam_embed + pos_embed
+        return out
 
-        dec_tokens = self.decoder(dec_tokens)  # [B, Nt, Dd]
+    def _add_decoder_encodings(self, dec_tokens: torch.Tensor) -> torch.Tensor:
+        """
+        dec_tokens: [B,V,N,Dd] -> [B,V,N,Dd]
+        """
+        B, V, N, Dd = dec_tokens.shape
+        out = dec_tokens
+        if self.use_sincosmod_encodings:
+            cam_ids = torch.arange(V, device=dec_tokens.device)
+            cam_embed = self.decoder_camera_embedding(cam_ids).view(1, V, 1, Dd)
+            pos_embed = self.patch_dec_pos_embedding[:, :N, :].view(1, 1, N, Dd)
+            out = out + cam_embed + pos_embed
+        return out
 
-        recon_loss_total = torch.tensor(0.0, device=device)
-        recon_loss_img = torch.tensor(0.0, device=device)
-        recon_loss_aux = torch.tensor(0.0, device=device)
+    def _sample_keep_mask(self, visible_views: torch.Tensor, mask_ratios: torch.Tensor, num_patches: int) -> torch.Tensor:
+        """
+        Returns keep mask [B,V,N] where True means token is provided to encoder.
+        """
+        B, V = visible_views.shape
+        device = visible_views.device
 
-        if m_idx_img.shape[1] > 0:
-            pred_px = self.to_pixels(dec_tokens[batch_range, m_idx[:, :m_idx_img.shape[1]]])
-            tgt_px = img_patches[batch_range, m_idx_img]
-            recon_loss_img = F.mse_loss(pred_px, tgt_px)
-            recon_loss_total = recon_loss_total + recon_loss_img
+        # Rank patches per sample/view and keep lowest ranks up to keep_count.
+        rand = torch.rand((B, V, num_patches), device=device)
+        ranks = rand.argsort(dim=-1).argsort(dim=-1)
 
-        if m_idx_aux.shape[1] > 0:
-            aux_slice = slice(m_idx_img.shape[1], m_idx_img.shape[1] + m_idx_aux.shape[1])
-            pred_aux = self.to_aux_pixels(dec_tokens[batch_range, m_idx[:, aux_slice]])
-            tgt_aux = aux_patches[batch_range, m_idx_aux]
-            recon_loss_aux = F.mse_loss(pred_aux, tgt_aux)
-            recon_loss_total = recon_loss_total + self.auxloss_multiplier * recon_loss_aux
+        keep_counts = ((1.0 - mask_ratios) * num_patches).round().long().clamp(0, num_patches)
+        keep_mask = ranks < keep_counts[..., None]
+        keep_mask = keep_mask & visible_views[..., None]
 
-        debug = {"Ni": Ni, "Na": Na, "m_idx_img": m_idx_img, "m_idx_aux": m_idx_aux}
+        # Ensure at least one encoder token per sample.
+        keep_per_sample = keep_mask.sum(dim=(1, 2))
+        zero_keep_idx = torch.where(keep_per_sample == 0)[0]
+        for b in zero_keep_idx.tolist():
+            visible = torch.where(visible_views[b])[0]
+            assert visible.numel() > 0, "No visible cameras for sample."
+            keep_mask[b, int(visible[0]), 0] = True
 
-        if kwargs.get("return_debug", False):
-            return recon_loss_total, debug
+        return keep_mask
 
-        if kwargs.get("return_breakdown", False):
-            return {
-                "total": recon_loss_total,
-                "rgb_mse": recon_loss_img,
-                "aux_mse": recon_loss_aux,
-                "rgb_weight": 1.0,
-                "aux_weight": float(self.auxloss_multiplier),
-                "n_img_masked": int(m_idx_img.shape[1]),
-                "n_aux_masked": int(m_idx_aux.shape[1]),
+    def _encode_with_variable_keep(self, tokens: torch.Tensor, keep_mask: torch.Tensor) -> tuple[torch.Tensor, List[torch.Tensor]]:
+        """
+        Encode only kept tokens with no fake/padded dropped-view tokens.
+
+        tokens: [B,V,N,D]
+        keep_mask: [B,V,N] bool
+
+        Returns:
+          - encoded_tokens_full: [B,V,N,D] with zeros where token was not encoded
+          - keep_indices: list of B tensors containing flattened kept indices in [0, V*N)
+        """
+        B, V, N, D = tokens.shape
+        device = tokens.device
+        flat_tokens = tokens.reshape(B, V * N, D)
+        flat_keep = keep_mask.reshape(B, V * N)
+
+        keep_indices = [torch.where(flat_keep[b])[0] for b in range(B)]
+
+        encoded_full = torch.zeros((B, V * N, self.encoder_dim), device=device, dtype=tokens.dtype)
+
+        # Group samples by token count to preserve true "no dropped tokens" while
+        # still batching transformer calls where possible.
+        groups: Dict[int, List[int]] = {}
+        for b, idx in enumerate(keep_indices):
+            groups.setdefault(int(idx.numel()), []).append(b)
+
+        for tok_count, sample_ids in groups.items():
+            assert tok_count > 0, "Every sample must have at least one kept token."
+            batch_tokens = torch.stack([flat_tokens[b, keep_indices[b]] for b in sample_ids], dim=0)  # [G,L,D]
+            batch_encoded = self.encoder.transformer(batch_tokens)
+            for row, b in enumerate(sample_ids):
+                encoded_full[b, keep_indices[b]] = batch_encoded[row]
+
+        return encoded_full.reshape(B, V, N, self.encoder_dim), keep_indices
+
+    def _decode_all_patches(self, encoded_full: torch.Tensor, keep_mask: torch.Tensor) -> torch.Tensor:
+        """
+        encoded_full: [B,V,N,D]
+        keep_mask: [B,V,N]
+        Returns predicted patches for every view/patch: [B,V,N,P]
+        """
+        B, V, N, D = encoded_full.shape
+        device = encoded_full.device
+
+        dec_full = self.enc_to_dec(encoded_full.reshape(B, V * N, D)).reshape(B, V, N, self.decoder_dim)
+
+        # Start with mask token everywhere, then fill kept positions with encoded tokens.
+        mask_token = self.mask_token.view(1, 1, 1, self.decoder_dim)
+        dec_tokens = mask_token.expand(B, V, N, self.decoder_dim).clone()
+        dec_tokens[keep_mask] = dec_full[keep_mask]
+
+        dec_tokens = self._add_decoder_encodings(dec_tokens)
+        dec_out = self.decoder(dec_tokens.reshape(B, V * N, self.decoder_dim)).reshape(B, V, N, self.decoder_dim)
+
+        preds = [self.to_view_pixels[v](dec_out[:, v]) for v in range(V)]
+        pred_patches = torch.stack(preds, dim=1)
+        return pred_patches
+
+    def _compute_losses(
+        self,
+        pred_patches: torch.Tensor,
+        tgt_patches: torch.Tensor,
+        keep_mask: torch.Tensor,
+        visible_views: torch.Tensor,
+        pattern_weights: torch.Tensor | None,
+        cross_view_loss_weight: float,
+    ) -> dict:
+        """
+        Returns loss dictionary with per-view and pattern-aware components.
+        """
+        B, V, N, P = pred_patches.shape
+        device = pred_patches.device
+
+        # Loss is only on masked patches (dropped views are fully masked).
+        loss_mask = ~keep_mask  # [B,V,N]
+        mse_patch = (pred_patches - tgt_patches).pow(2).mean(dim=-1)  # [B,V,N]
+
+        masked_counts = loss_mask.sum(dim=-1).clamp(min=1)  # [B,V]
+        sample_view_loss = (mse_patch * loss_mask.float()).sum(dim=-1) / masked_counts.float()  # [B,V]
+
+        dropped_views = ~visible_views
+        dropped_float = dropped_views.float()
+        visible_float = visible_views.float()
+
+        visible_denom = visible_float.sum(dim=1).clamp(min=1.0)
+        cross_denom = dropped_float.sum(dim=1).clamp(min=1.0)
+
+        visible_loss_per_sample = (sample_view_loss * visible_float).sum(dim=1) / visible_denom
+        cross_loss_per_sample = (sample_view_loss * dropped_float).sum(dim=1) / cross_denom
+        cross_loss_per_sample = torch.where(
+            dropped_float.sum(dim=1) > 0,
+            cross_loss_per_sample,
+            torch.zeros_like(cross_loss_per_sample),
+        )
+
+        cross_weight_matrix = torch.where(
+            dropped_views,
+            torch.full_like(sample_view_loss, float(cross_view_loss_weight)),
+            torch.ones_like(sample_view_loss),
+        )
+        sample_recon_loss = (sample_view_loss * cross_weight_matrix).mean(dim=1)
+
+        if pattern_weights is None:
+            pattern_weights = torch.ones((B,), device=device, dtype=sample_recon_loss.dtype)
+        else:
+            pattern_weights = pattern_weights.to(device=device, dtype=sample_recon_loss.dtype)
+            assert pattern_weights.shape == (B,), (
+                f"pattern_weights must be [B], got {tuple(pattern_weights.shape)}"
+            )
+
+        weighted_sample_loss = sample_recon_loss * pattern_weights
+        total_loss = weighted_sample_loss.mean()
+
+        per_view_mse = sample_view_loss.mean(dim=0)
+
+        return {
+            "total": total_loss,
+            "recon_unweighted": sample_recon_loss.mean(),
+            "visible_loss": visible_loss_per_sample.mean(),
+            "cross_view_loss": cross_loss_per_sample.mean(),
+            "per_view_mse": per_view_mse,
+            "pattern_weight_mean": pattern_weights.mean(),
+            "masked_counts": masked_counts,
+            "loss_mask": loss_mask,
+            "sample_view_loss": sample_view_loss,
+            "sample_recon_loss": sample_recon_loss,
+        }
+
+    def forward(
+        self,
+        views: torch.Tensor | dict,
+        *,
+        visible_views: torch.Tensor | None = None,
+        mask_ratios: torch.Tensor | None = None,
+        pattern_ids: torch.Tensor | None = None,
+        pattern_weights: torch.Tensor | None = None,
+        cross_view_loss_weight: float = 1.5,
+        return_breakdown: bool = False,
+        return_debug: bool = False,
+    ):
+        """
+        Args:
+          views: [B,V,C,H,W] (preferred) or dict with key "views"
+        """
+        if isinstance(views, dict):
+            if "views" in views:
+                views = views["views"]
+            else:
+                raise AssertionError("Expected dict input with key 'views'.")
+
+        views, visible_views, mask_ratios = self._validate_inputs(views, visible_views, mask_ratios)
+
+        # Targets are always all views.
+        tgt_patches = self.encoder.patchify_views(views)
+
+        tokens = self.encoder.embed_view_patches(tgt_patches)
+        tokens = self._add_encodings(tokens)
+
+        keep_mask = self._sample_keep_mask(visible_views, mask_ratios, self.num_patches_per_view)
+
+        encoded_full, keep_indices = self._encode_with_variable_keep(tokens, keep_mask)
+        pred_patches = self._decode_all_patches(encoded_full, keep_mask)
+
+        out = self._compute_losses(
+            pred_patches,
+            tgt_patches,
+            keep_mask,
+            visible_views,
+            pattern_weights,
+            cross_view_loss_weight,
+        )
+
+        # Pattern-wise loss means (if provided) for logging.
+        if pattern_ids is not None:
+            pattern_ids = pattern_ids.to(device=views.device, dtype=torch.long)
+            assert pattern_ids.shape[0] == views.shape[0], "pattern_ids must have length B"
+            for pid, name in ((0, "triple"), (1, "single")):
+                mask = pattern_ids == pid
+                if bool(mask.any()):
+                    out[f"pattern_loss_{name}"] = out["sample_recon_loss"][mask].mean()
+                else:
+                    out[f"pattern_loss_{name}"] = torch.tensor(0.0, device=views.device)
+
+        if return_debug:
+            out["debug"] = {
+                "keep_mask": keep_mask,
+                "loss_mask": out["loss_mask"],
+                "visible_views": visible_views,
+                "mask_ratios": mask_ratios,
+                "pred_patches": pred_patches.detach(),
+                "target_patches": tgt_patches.detach(),
+                "keep_indices": keep_indices,
+                "pattern_ids": pattern_ids.detach().clone() if pattern_ids is not None else None,
+                "num_patches": self.num_patches_per_view,
             }
 
-        return recon_loss_total
+        if return_breakdown:
+            out["view0_mse"] = out["per_view_mse"][0]
+            out["view1_mse"] = out["per_view_mse"][1] if self.num_views > 1 else torch.tensor(0.0, device=views.device)
+            out["view2_mse"] = out["per_view_mse"][2] if self.num_views > 2 else torch.tensor(0.0, device=views.device)
+            return out
 
-    def get_embeddings(self, x: dict, eval: bool = True, use_vision: bool = True, use_aux: bool = True):
-        assert "image" in x, "Image input is required."
+        return out["total"]
+
+    def get_embeddings(
+        self,
+        views: torch.Tensor | dict,
+        *,
+        visible_views: torch.Tensor | None = None,
+        eval: bool = True,
+    ) -> torch.Tensor:
+        """
+        Returns pooled encoder representations for any camera subset.
+
+        views: [B,V,C,H,W]
+        visible_views: [B,V] bool, optional. If omitted, all views are used.
+        """
+        if isinstance(views, dict):
+            if "views" in views:
+                views = views["views"]
+            else:
+                raise AssertionError("Expected dict input with key 'views'.")
+
         self.eval() if eval else self.train()
 
-        device = x["image"].device
-        B = x["image"].shape[0]
+        views, visible_views, _ = self._validate_inputs(views, visible_views, mask_ratios=None)
 
-        x_aux = x.get("image_aux", None)
-        use_aux = bool(use_aux and (x_aux is not None) and isinstance(x_aux, torch.Tensor) and x_aux.numel() > 0)
+        patches = self.encoder.patchify_views(views)
+        tokens = self.encoder.embed_view_patches(patches)
+        tokens = self._add_encodings(tokens)
 
-        img_tok = self._tokens_from_image(x["image"], B, device, use_vision)
-        aux_tok = self._tokens_from_aux_optional(x_aux, B, device, use_aux)
+        keep_mask = visible_views[..., None].expand(-1, -1, self.num_patches_per_view)
+        encoded_full, keep_indices = self._encode_with_variable_keep(tokens, keep_mask)
 
-        if self.use_sincosmod_encodings and img_tok.shape[1] > 0:
-            img_tok = img_tok + self.encoder_modality_embedding.weight[0] + self.image_enc_pos_embedding
-        if self.use_sincosmod_encodings and aux_tok.shape[1] > 0:
-            aux_tok = aux_tok + self.encoder_modality_embedding.weight[1] + self.aux_enc_pos_embedding
+        B, V, N, D = encoded_full.shape
+        flat_encoded = encoded_full.reshape(B, V * N, D)
 
-        tokens = torch.cat([img_tok, aux_tok], dim=1)
-        encoded_tokens = self.encoder.transformer(tokens)
-        rep = self.repr_ln(encoded_tokens.mean(dim=1))
-        return rep
+        reps = []
+        for b in range(B):
+            idx = keep_indices[b]
+            reps.append(self.repr_ln(flat_encoded[b, idx].mean(dim=0)))
+        return torch.stack(reps, dim=0)
+
+
+# Backward-compatible aliases.
+VST = MultiViewVST
+VSMAE = MultiViewVSMAE
